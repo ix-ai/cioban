@@ -51,18 +51,17 @@ main() {
   verbose=${VERBOSE:-}
 
   supports_detach_option=false
-  echo "INIT: Server version is $(server_version)"
   if version_gt "$(server_version)" "17.05" ; then
     supports_detach_option=true
-    echo "INIT: Enabling synchronous service updates"
+    echo "INIT: Server version is $(server_version). Enabling synchronous service updates"
   else
-    echo "INIT: Not enabling synchronous service updates"
+    echo "INIT: Server version is $(server_version). Not enabling synchronous service updates"
   fi
 
   supports_registry_auth=false
   if [[ -f "/root/.docker/config.json" ]]; then
     supports_registry_auth=true
-    echo "INIT: /root/.docker/config.json found. Sening registry authentication details to swarm agents"
+    echo "INIT: /root/.docker/config.json found. Sending registry authentication details to swarm agents"
   else
     echo "INIT: /root/.docker/config.json not found. Not sending registry authentication details to swarm agents"
   fi
@@ -70,6 +69,7 @@ main() {
   [[ "${blacklist}" != "" ]] && echo "INIT: Excluding services: ${blacklist}"
   [[ "${verbose}" != "" ]] && echo "INIT: Verbose is on"
   echo "INIT: Sleep time is set to ${sleep_time}"
+  echo "INIT: Starting"
 
   while true; do
     update_services "${blacklist}" "${supports_detach_option}" "${supports_registry_auth}"

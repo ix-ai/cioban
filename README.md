@@ -62,6 +62,17 @@ docker service create \
     ixdotai/cioban
 ```
 
+### Logging example (without VERBOSE):
+```
+$ sudo docker service logs -f infra_cioban
+infra_cioban.1.w78zwf6k9p3c@docker-a    | INIT: Server version is 19.03.1. Enabling synchronous service updates
+infra_cioban.1.w78zwf6k9p3c@docker-a    | INIT: /root/.docker/config.json found. Sending registry authentication details to swarm agents
+infra_cioban.1.w78zwf6k9p3c@docker-a    | INIT: Sleep time is set to 30s
+infra_cioban.1.w78zwf6k9p3c@docker-a    | INIT: Starting
+infra_cioban.1.w78zwf6k9p3c@docker-a    | RUN: Service exporters_gdax was updated!
+infra_cioban.1.w78zwf6k9p3c@docker-a    | RUN: Service exporters_hitbtc was updated!
+infra_cioban.1.w78zwf6k9p3c@docker-a    | RUN: Service exporters_kraken was updated!
+```
 ## How does it work?
 Cioban just triggers updates by updating the image specification for each service, removing the current digest.
 

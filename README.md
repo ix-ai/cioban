@@ -1,57 +1,80 @@
 # Shepherd
 
-[![Build Status](https://ci.strahlungsfrei.de/api/badges/djmaze/shepherd/status.svg)](https://ci.strahlungsfrei.de/djmaze/shepherd)
-[![Docker Stars](https://img.shields.io/docker/stars/mazzolino/shepherd.svg)](https://hub.docker.com/r/mazzolino/shepherd/) [![Docker Pulls](https://img.shields.io/docker/pulls/mazzolino/shepherd.svg)](https://hub.docker.com/r/mazzolino/shepherd/)
+[![Pipeline Status](https://gitlab.com/ix.ai/cioban/badges/master/pipeline.svg)](https://gitlab.com/ix.ai/cioban/)
+[![Docker Stars](https://img.shields.io/docker/stars/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
+[![Gitlab Project](https://img.shields.io/badge/GitLab-Project-554488.svg)](https://gitlab.com/ix.ai/cioban/)
 
-A Docker swarm service for automatically updating your services whenever their base image is refreshed.
 
-## Usage
+A Docker swarm service for automatically updating your services to the latest image tag push.
 
-    docker service create --name shepherd \
-                          --constraint "node.role==manager" \
-                          --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,ro \
-                          mazzolino/shepherd
+## Usage Examples
 
-## Or with docker-compose
-    version: "3"
-    services:
-      ...
-      shepherd:
-        build: .
-        image: mazzolino/shepherd
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-        deploy:
-          placement:
-            constraints:
-            - node.role == manager
+### CLI
+```sh
+docker service create \
+    --name cioban \
+    --constraint "node.role==manager" \
+    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,ro \
+    ixdotai/cioban
+```
 
-### Configuration
+### docker-compose
+```yml
+version: "3.7"
 
-Shepherd will try to update your services every 5 minutes by default. You can adjust this value using the `SLEEP_TIME` variable.
+services:
+  cioban:
+    image: ixdotai/cioban
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:rw'
+      - '/root/.docker/config.json:/root/.docker/config.json:ro'
+    environment:
+      SLEEP_TIME: 30s
+    deploy:
+      placement:
+        constraints:
+        - node.role == manager
+```
+
+## Configuration
+Cioban will try to update your services every 5 minutes by default. You can adjust this value using the `SLEEP_TIME` variable.
 
 You can prevent services from being updated by appending them to the `BLACKLIST_SERVICES` variable. This should be a space-separated list of service names.
 
 Alternatively you can specify a filter for the services you want updated using the `FILTER_SERVICES` variable. This can be anything accepted by the filtering flag in `docker service ls`.
 
-You can enable private registry authentication by setting the `WITH_REGISTRY_AUTH` variable.
+If you want to see all log messages about the update tries, set the `VERBOSE` variable.
 
-Example:
+You can enable private registry authentication by mounting your credentials file to `/root/.docker/config.json`
 
-    docker service create --name shepherd \
-                        --constraint "node.role==manager" \
-                        --env SLEEP_TIME="5m" \
-                        --env BLACKLIST_SERVICES="shepherd my-other-service" \
-                        --env WITH_REGISTRY_AUTH="true" \
-                        --env FILTER_SERVICES="label=com.mydomain.autodeploy"
-                        --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,ro \
-                        --mount type=bind,source=/root/.docker/config.json,target=/root/.docker/config.json,ro \
-                        mazzolino/shepherd
+### Example:
+```sh
+docker service create \
+    --name cioban \
+    --constraint "node.role==manager" \
+    --env SLEEP_TIME="5m" \
+    --env BLACKLIST_SERVICES="cioban my-other-service" \
+    --env FILTER_SERVICES="label=com.mydomain.autodeploy" \
+    --env VERBOSE="true" \
+    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,rw \
+    --mount type=bind,source=/root/.docker/config.json,target=/root/.docker/config.json,ro \
+    ixdotai/cioban
+```
 
 ## How does it work?
+Cioban just triggers updates by updating the image specification for each service, removing the current digest.
 
-Shepherd just triggers updates by updating the image specification for each service, removing the current digest.
-
-Most of the work is thankfully done by Docker which [resolves the image tag, checks the registry for a newer version and updates running container tasks as needed](https://docs.docker.com/engine/swarm/services/#update-a-services-image-after-creation).
+Most of the work is done by Docker which [resolves the image tag, checks the registry for a newer version and updates running container tasks as needed](https://docs.docker.com/engine/swarm/services/#update-a-services-image-after-creation).
 
 Also, Docker handles all the work of [applying rolling updates](https://docs.docker.com/engine/swarm/swarm-tutorial/rolling-update/). So at least with replicated services, there should be no noticeable downtime.
+
+## Resources
+* GitLab: https://gitlab.com/ix.ai/cioban
+* Docker Hub: https://hub.docker.com/r/ixdotai/cioban
+
+## Credits
+Cioban is a fork of [shepherd](https://github.com/djmaze/shepherd).
+
+### What is `cioban`?
+Cioban is the Romanian translation of the word `shepherd`.

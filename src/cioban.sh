@@ -23,16 +23,16 @@ update_services() {
     if [[ " ${blacklist} " != *" ${service_name} "* ]]; then
       image_with_digest="$(docker service inspect "${service_name}" -f '{{.Spec.TaskTemplate.ContainerSpec.Image}}')"
       image=$(echo "${image_with_digest}" | cut -d@ -f1)
-      [ "${verbose}" = "true" ] && echo "Trying to update service ${service_name} with image ${image}"
+      [ "${verbose}" = "true" ] && echo "RUN: Trying to update service ${service_name} with image ${image}"
       docker service update "${service_name}" ${detach_option} ${registry_auth} --image="${image}" > /dev/null
 
       previous_image=$(docker service inspect "${service_name}" -f '{{.PreviousSpec.TaskTemplate.ContainerSpec.Image}}')
       current_image=$(docker service inspect "${service_name}" -f '{{.Spec.TaskTemplate.ContainerSpec.Image}}')
 
       if [ "${previous_image}" == "${current_image}" ]; then
-        [ "${verbose}" = "true" ] && echo "No updates to service ${service_name}!"
+        [ "${verbose}" = "true" ] && echo "RUN: No updates to service ${service_name}!"
       else
-        echo "Service ${service_name} was updated!"
+        echo "RUN: Service ${service_name} was updated!"
       fi
 
     fi
@@ -45,27 +45,35 @@ version_gt() {
 }
 
 main() {
-  local blacklist sleep_time supports_detach_option supports_registry_auth
+  local blacklist sleep_time supports_detach_option supports_registry_auth verbose
   blacklist="${BLACKLIST_SERVICES:-}"
   sleep_time="${SLEEP_TIME:-5m}"
+  verbose=${VERBOSE:-}
 
   supports_detach_option=false
+  echo "INIT: Server version is $(server_version)"
   if version_gt "$(server_version)" "17.05" ; then
     supports_detach_option=true
-    echo "Enabling synchronous service updates"
+    echo "INIT: Enabling synchronous service updates"
+  else
+    echo "INIT: Not enabling synchronous service updates"
   fi
 
   supports_registry_auth=false
   if [[ -f "/root/.docker/config.json" ]]; then
     supports_registry_auth=true
-    echo "Send registry authentication details to swarm agents"
+    echo "INIT: /root/.docker/config.json found. Sening registry authentication details to swarm agents"
+  else
+    echo "INIT: /root/.docker/config.json not found. Not sending registry authentication details to swarm agents"
   fi
 
-  [[ "${blacklist}" != "" ]] && echo "Excluding services: ${blacklist}"
+  [[ "${blacklist}" != "" ]] && echo "INIT: Excluding services: ${blacklist}"
+  [[ "${verbose}" != "" ]] && echo "INIT: Verbose is on"
+  echo "INIT: Sleep time is set to ${sleep_time}"
 
   while true; do
     update_services "${blacklist}" "${supports_detach_option}" "${supports_registry_auth}"
-    echo "Sleeping ${sleep_time} before next update"
+    [ "${verbose}" = "true" ] && echo "RUN: Sleeping ${sleep_time} before next update"
     sleep "${sleep_time}"
   done
 }

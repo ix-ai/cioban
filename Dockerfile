@@ -1,10 +1,18 @@
-FROM docker
+FROM docker:latest
 
-ENV SLEEP_TIME='5m'
-ENV FILTER_SERVICES=''
+LABEL maintainer='ix.ai <docker@ix.ai>'
 
-RUN apk add --update --no-cache bash
+ARG SLEEP_TIME='5m'
+ARG FILTER_SERVICES=''
+ARG BLACKLIST_SERVICES=''
 
-COPY shepherd /usr/local/bin/shepherd
+ENV SLEEP_TIME=${SLEEP_TIME}
+ENV FILTER_SERVICES=${FILTER_SERVICES}
+ENV BLACKLIST_SERVICES=${BLACKLIST_SERVICES}
 
-ENTRYPOINT ["/usr/local/bin/shepherd"]
+COPY src/cioban.sh /usr/local/bin/cioban
+
+RUN chmod 755 /usr/local/bin/cioban &&\
+    apk add --update --no-cache bash
+
+ENTRYPOINT ["/usr/local/bin/cioban"]

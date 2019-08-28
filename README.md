@@ -1,4 +1,4 @@
-# Shepherd
+# cioban
 
 [![Pipeline Status](https://gitlab.com/ix.ai/cioban/badges/master/pipeline.svg)](https://gitlab.com/ix.ai/cioban/)
 [![Docker Stars](https://img.shields.io/docker/stars/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
@@ -6,7 +6,7 @@
 [![Gitlab Project](https://img.shields.io/badge/GitLab-Project-554488.svg)](https://gitlab.com/ix.ai/cioban/)
 
 
-A Docker swarm service for automatically updating your services to the latest image tag push.
+A docker swarm service for automatically updating your services to the latest image tag push.
 
 ## Usage Examples
 

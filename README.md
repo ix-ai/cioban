@@ -15,7 +15,7 @@ A Docker swarm service for automatically updating your services to the latest im
 docker service create \
     --name cioban \
     --constraint "node.role==manager" \
-    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,ro \
+    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock,rw \
     ixdotai/cioban
 ```
 

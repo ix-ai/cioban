@@ -29,8 +29,8 @@ shellcheck:
   <<: *tags-definition
 
 build:dev:
-  except:
-    - tags
+  only:
+    - master
   before_script:
     - export DESTINATION="--destination ${CI_REGISTRY_IMAGE}:dev-${CI_COMMIT_REF_NAME}"
   <<: *tags-definition

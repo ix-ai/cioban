@@ -100,7 +100,7 @@ main() {
   log_me "Starting" init
 
   while true; do
-    log_me "Starting update"
+    log_me "Starting update run" heartbeat
     update_services "${supports_detach_option}" "${supports_registry_auth}"
     log_me "Sleeping ${sleep_time}" heartbeat
     sleep "${sleep_time}"

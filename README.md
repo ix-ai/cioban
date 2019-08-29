@@ -48,7 +48,7 @@ If you want to see all log messages about the update tries, set the `VERBOSE` va
 
 You can enable private registry authentication by mounting your credentials file to `/root/.docker/config.json`.
 
-By setting `DISABLE_HEARTBEAT` you can disable the `HEARTBEAT: Sleeping ${SLEEP_TIME}` messages.
+By setting `DISABLE_HEARTBEAT` you can disable the `HEARTBEAT: Sleeping ${SLEEP_TIME}` and `HEARTBEAT: Starting update run` messages.
 
 ### Example:
 ```sh

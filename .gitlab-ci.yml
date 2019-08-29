@@ -41,6 +41,9 @@ publish:release:
   <<: *tags-definition
   <<: *build-definition
   stage: release
+  environment:
+    name: production
+    url: https://hub.docker.com/r/${DOCKERHUB_REPO_PREFIX}/${DOCKERHUB_REPO_NAME}
   only:
     - tags
   before_script:

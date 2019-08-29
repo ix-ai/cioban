@@ -22,6 +22,7 @@ log_me() {
       show_message="true"
       ;;
   esac
+  # shellcheck disable=SC2015
   [[ "${show_message}" == true ]] && /bin/echo "${action^^}: ${message}" || true
 }
 

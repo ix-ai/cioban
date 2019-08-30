@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+[[ -z "${TRACE:-}" ]] && set -x
+
 log_me() {
   local verbose heartbeat action message show_message
   verbose=${VERBOSE:-}

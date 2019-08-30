@@ -50,6 +50,8 @@ You can enable private registry authentication by mounting your credentials file
 
 By setting `DISABLE_HEARTBEAT` you can disable the `HEARTBEAT: Sleeping ${SLEEP_TIME}` and `HEARTBEAT: Starting update run` messages.
 
+For development purposes there is the variable `TRACE` that enables detailed tracing of the bash script.
+
 ### Example:
 ```sh
 docker service create \

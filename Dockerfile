@@ -2,19 +2,17 @@ FROM docker:latest
 
 LABEL maintainer='ix.ai <docker@ix.ai>'
 
-ARG SLEEP_TIME='5m'
-ARG FILTER_SERVICES=''
-ARG BLACKLIST_SERVICES=''
+ARG PORT='9308'
 
 WORKDIR /app
 
 COPY src/ /app
 
-ENV SLEEP_TIME=${SLEEP_TIME}
-ENV FILTER_SERVICES=${FILTER_SERVICES}
-ENV BLACKLIST_SERVICES=${BLACKLIST_SERVICES}
+RUN apk add --no-cache python3 && \
+    pip3 install --no-cache-dir -r requirements.txt
 
-RUN chmod 755 /app/*.sh &&\
-    apk add --update --no-cache bash
+ENV PORT=${PORT}
 
-ENTRYPOINT ["/app/cioban.sh"]
+EXPOSE ${PORT}
+
+ENTRYPOINT ["python3", "/app/cioban.py"]

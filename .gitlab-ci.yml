@@ -4,4 +4,4 @@ variables:
   DOCKERHUB_REPO_NAME: cioban
 
 include:
-  - remote: https://gitlab.com/ix.ai/ci-templates/raw/master/bash-project.yml
+  - remote: https://gitlab.com/ix.ai/ci-templates/raw/master/python-project.yml

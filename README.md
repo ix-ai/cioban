@@ -130,6 +130,30 @@ infra_cioban.1.vr1ef401y9ql@docker-a    | INFO {cioban} [run] Sleeping for 3 min
 infra_cioban.1.vr1ef401y9ql@docker-a    | INFO {cioban} [run] Starting update run
 infra_cioban.1.vr1ef401y9ql@docker-a    | INFO {cioban} [run] Sleeping for 3 minutes
 ```
+### Prometheus metrics
+
+In addition to the metrics exporter by [prometheus/client_python/](https://github.com/prometheus/client_python/), the following metrics are exposed by cioban:
+```
+# HELP update_run_seconds Time spent processing updates
+# TYPE update_run_seconds summary
+update_run_seconds_count 1.0
+update_run_seconds_sum 43.92592599400086
+# TYPE update_run_seconds_created gauge
+update_run_seconds_created 1.5672812321329722e+09
+# HELP service_updated_total Shows if a service has been updated
+# TYPE service_updated_total counter
+service_updated_total{id="pqs6wtscm1tq6yiqrmu4wv0of",name="smtp_smtp",short_id="pqs6wtscm1"} 1.0
+# TYPE service_updated_created gauge
+service_updated_created{id="pqs6wtscm1tq6yiqrmu4wv0of",name="smtp_smtp",short_id="pqs6wtscm1"} 1.567281276077023e+09
+# HELP cioban_info Information about cioban
+# TYPE cioban_info gauge
+cioban_info{version="0.7.0"} 1.0
+# HELP cioban_state The current state of cioban
+# TYPE cioban_state gauge
+cioban_state{cioban_state="running"} 0.0
+cioban_state{cioban_state="sleeping"} 1.0
+```
+
 ## How does it work?
 Cioban just triggers updates by updating the image specification for each service, removing the current digest.
 

@@ -88,6 +88,9 @@ class Cioban():
     def _run(self):
         """ the actual run """
         services = self.get_services()
+        # prometheus metrics first
+        for service in services:
+            prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(0)
         for service in services:
             image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
             image = image_with_digest.split('@', 1)[0]
@@ -128,7 +131,6 @@ class Cioban():
                 else:
                     self.logger.info('Service {} has been updated'.format(service.name))
                     prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(1)
-            # self.logger.debug(json.dumps(service.attrs))
 
     def logging(self):
         """ Configures the logging """

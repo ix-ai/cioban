@@ -42,7 +42,7 @@ class Cioban():
 
         self.configure_sleep()
         self.logger.info('SLEEP_TIME="{}"'.format(self.settings['sleep_time']))
-        self.logger.inf('PORT="{}"'.format(self.settings['prometheus_port']))
+        self.logger.info('PORT="{}"'.format(self.settings['prometheus_port']))
 
         if os.environ.get("VERBOSE"):
             self.logger.warning(constants.VERBOSE_DEPRECATION)

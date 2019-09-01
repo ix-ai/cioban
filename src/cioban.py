@@ -72,7 +72,12 @@ class Cioban():
 
     def run(self):
         """ prepares the run and then triggers it. this is the actual loop """
-        self.logger.info("Starting cioban with prometheus metrics on port {}".format(self.settings['prometheus_port']))
+        self.logger.info(
+            "Starting cioban {} with prometheus metrics on port {}".format(
+                constants.VERSION,
+                self.settings['prometheus_port']
+            )
+        )
         self.docker = docker.from_env()
         start_http_server(self.settings['prometheus_port'])  # starts the prometheus metrics server
         while True:

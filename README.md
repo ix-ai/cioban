@@ -164,6 +164,7 @@ Also, Docker handles all the work of [applying rolling updates](https://docs.doc
 ## Resources
 * GitLab: https://gitlab.com/ix.ai/cioban
 * Docker Hub: https://hub.docker.com/r/ixdotai/cioban
+* ix.ai CI templates: https://gitlab.com/ix.ai/ci-templates
 
 ## Credits
 Cioban is a fork of [shepherd](https://github.com/djmaze/shepherd). It has been completely rewritten in python.

@@ -119,7 +119,7 @@ class Cioban():
             while updating:
                 service.reload()
                 if service.attrs.get('UpdateStatus') and service.attrs['UpdateStatus'].get('State') == 'updating':
-                    self.logger.critical('Service {} is updating. Waiting...'.format(service.name))
+                    self.logger.debug('Service {} is in status `updating`. Waiting 1s...'.format(service.name))
                     pause.seconds(1)
                 else:
                     updating = False

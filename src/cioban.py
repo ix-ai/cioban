@@ -117,7 +117,7 @@ class Cioban():
             )
             self.logger.debug('Update command: {}'.format(json.dumps(update_run.args)))
             if update_run.stderr:
-                self.logger.debug('Update STDERR: {}'.format(json.dumps(update_run.stderr)))
+                self.logger.debug('Update STDERR: {}'.format(update_run.stderr))
             if update_run.stdout:
                 self.logger.debug('Update STDOUT: {}'.format(update_run.stdout))
             updating = True

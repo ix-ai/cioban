@@ -117,10 +117,15 @@ class Cioban():
         except subprocess.CalledProcessError as err:
             self.logger.exception('Exception caught: {}'.format(err))
         else:
+            if update_run.returncode > 0:
+                self.logger.error('Command exited with return code {} for service {}'.format(
+                    update_run.returncode,
+                    service_name
+                ))
             if update_run.stderr:
-                self.logger.debug('Update STDERR: {}'.format(update_run.stderr))
+                self.logger.error('Command STDERR: {}'.format(update_run.stderr))
             if update_run.stdout:
-                self.logger.debug('Update STDOUT: {}'.format(update_run.stdout))
+                self.logger.debug('Command STDOUT: {}'.format(update_run.stdout))
         finally:
             self.logger.debug('Update command: {}'.format(json.dumps(update_run.args)))
 

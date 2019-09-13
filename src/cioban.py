@@ -89,6 +89,41 @@ class Cioban():
             wait = getattr(pause, self.sleep_type)
             wait(self.sleep)
 
+    def _update_service(self, service_id, image, service_name):
+        """ updates a service to a specific image """
+        self.logger.debug('Trying to update service {} (id: {}) with image {}'.format(service_name, service_id, image))
+        # Ideally this would work:
+        #   service.update(image=image)
+        # or:
+        #   self.docker.api.update_service(
+        #       service=service.id,
+        #       version=service.version,
+        #       fetch_current_spec=True,
+        #       task_template=docker.types.TaskTemplate(service.attrs["Spec"]["TaskTemplate"]["ContainerSpec"]),
+        #   )
+        # but instead, we need to run (see https://github.com/docker/docker-py/issues/2422):
+        try:
+            update_run = subprocess.run(
+                args=[
+                    'docker',
+                    'service',
+                    'update',
+                    '--with-registry-auth',
+                    '--image={}'.format(image),
+                    service_id
+                ],
+                capture_output=True,
+            )
+        except subprocess.CalledProcessError as err:
+            self.logger.exception('Exception caught: {}'.format(err))
+        else:
+            if update_run.stderr:
+                self.logger.debug('Update STDERR: {}'.format(update_run.stderr))
+            if update_run.stdout:
+                self.logger.debug('Update STDOUT: {}'.format(update_run.stdout))
+        finally:
+            self.logger.debug('Update command: {}'.format(json.dumps(update_run.args)))
+
     @prometheus.PROM_UPDATE_SUMMARY.time()
     def _run(self):
         """ the actual run """
@@ -99,27 +134,7 @@ class Cioban():
         for service in services:
             image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
             image = image_with_digest.split('@', 1)[0]
-            self.logger.debug('Trying to update service {} with image {}'.format(service.name, image))
-            # Ideally this would work:
-            #   service.update(image=image)
-            # or:
-            #   self.docker.api.update_service(
-            #       service=service.id,
-            #       version=service.version,
-            #       fetch_current_spec=True,
-            #       task_template=docker.types.TaskTemplate(service.attrs["Spec"]["TaskTemplate"]["ContainerSpec"]),
-            #   )
-            # but instead, we need to run (see https://github.com/docker/docker-py/issues/2422):
-            update_run = subprocess.run(
-                args=['docker', 'service', 'update', '--with-registry-auth', '--image={}'.format(image), service.id],
-                check=True,
-                capture_output=True,
-            )
-            self.logger.debug('Update command: {}'.format(json.dumps(update_run.args)))
-            if update_run.stderr:
-                self.logger.debug('Update STDERR: {}'.format(update_run.stderr))
-            if update_run.stdout:
-                self.logger.debug('Update STDOUT: {}'.format(update_run.stdout))
+            self._update_service(service_id=service.id, image=image, service_name=service.name)
             updating = True
             while updating:
                 service.reload()

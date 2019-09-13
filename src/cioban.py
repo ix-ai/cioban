@@ -28,21 +28,21 @@ class Cioban():
         self.logging()
         prometheus.PROM_INFO.info({'version': constants.VERSION})
         if self.settings['filters']:
-            self.logger.info('FILTER_SERVICES="{}"'.format(self.settings['filters']))
+            self.logger.warning('FILTER_SERVICES="{}"'.format(self.settings['filters']))
             self.settings['filters'] = self.settings['filters'].split('=', 1)
             self.settings['filters'] = {self.settings['filters'][0]: self.settings['filters'][1]}
         else:
-            self.logger.info('FILTER_SERVICES is not set')
+            self.logger.warning('FILTER_SERVICES is not set')
 
         if self.settings['blacklist']:
-            self.logger.info('BLACKLIST_SERVICES="{}"'.format(self.settings['blacklist']))
+            self.logger.warning('BLACKLIST_SERVICES="{}"'.format(self.settings['blacklist']))
             self.settings['blacklist'] = self.settings['blacklist'].split(' ')
         else:
-            self.logger.info('BLACKLIST_SERVICES is not set')
+            self.logger.warning('BLACKLIST_SERVICES is not set')
 
         self.configure_sleep()
-        self.logger.info('SLEEP_TIME="{}"'.format(self.settings['sleep_time']))
-        self.logger.info('PORT="{}"'.format(self.settings['prometheus_port']))
+        self.logger.warning('SLEEP_TIME="{}"'.format(self.settings['sleep_time']))
+        self.logger.warning('PORT="{}"'.format(self.settings['prometheus_port']))
 
         if os.environ.get("VERBOSE"):
             self.logger.warning(constants.VERBOSE_DEPRECATION)
@@ -72,7 +72,7 @@ class Cioban():
 
     def run(self):
         """ prepares the run and then triggers it. this is the actual loop """
-        self.logger.info(
+        self.logger.warning(
             "Starting cioban {} with prometheus metrics on port {}".format(
                 constants.VERSION,
                 self.settings['prometheus_port']
@@ -82,16 +82,16 @@ class Cioban():
         start_http_server(self.settings['prometheus_port'])  # starts the prometheus metrics server
         while True:
             prometheus.PROM_STATE_ENUM.state('running')
-            self.logger.debug('Starting update run')
+            self.logger.info('Starting update run')
             self._run()
-            self.logger.debug('Sleeping for {} {}'.format(self.sleep, self.sleep_type))
+            self.logger.info('Sleeping for {} {}'.format(self.sleep, self.sleep_type))
             prometheus.PROM_STATE_ENUM.state('sleeping')
             wait = getattr(pause, self.sleep_type)
             wait(self.sleep)
 
     def _update_service(self, service_id, image, service_name):
         """ updates a service to a specific image """
-        self.logger.debug('Trying to update service {} (id: {}) with image {}'.format(service_name, service_id, image))
+        self.logger.info('Trying to update service {} (id: {}) with image {}'.format(service_name, service_id, image))
         # Ideally this would work:
         #   service.update(image=image)
         # or:
@@ -144,7 +144,7 @@ class Cioban():
             while updating:
                 service.reload()
                 if service.attrs.get('UpdateStatus') and service.attrs['UpdateStatus'].get('State') == 'updating':
-                    self.logger.debug('Service {} is in status `updating`. Waiting 1s...'.format(service.name))
+                    self.logger.info('Service {} is in status `updating`. Waiting 1s...'.format(service.name))
                     pause.seconds(1)
                 else:
                     updating = False
@@ -152,15 +152,15 @@ class Cioban():
                 current_image = service.attrs['PreviousSpec']['TaskTemplate']['ContainerSpec']['Image']
                 previous_image = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
                 if current_image == previous_image:
-                    self.logger.debug('No updates for service {}'.format(service.name))
+                    self.logger.info('No updates for service {}'.format(service.name))
                 else:
-                    self.logger.info('Service {} has been updated'.format(service.name))
+                    self.logger.warning('Service {} has been updated'.format(service.name))
                     prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(1)
 
     def logging(self):
         """ Configures the logging """
         self.logger = logging.getLogger(__name__)
-        loglevel = os.environ.get('LOGLEVEL', 'INFO')
+        loglevel = os.environ.get('LOGLEVEL', 'WARNING')
         gelf_enabled = False
         logging.basicConfig(
             stream=sys.stdout,
@@ -179,8 +179,8 @@ class Cioban():
             )
             self.logger.addHandler(GELF)
             gelf_enabled = True
-            self.logger.info('LOGLEVEL="{}"'.format(loglevel))
-            self.logger.info('Initialized logging with GELF enabled: {}'.format(gelf_enabled))
+            self.logger.warning('LOGLEVEL="{}"'.format(loglevel))
+            self.logger.warning('Initialized logging with GELF enabled: {}'.format(gelf_enabled))
 
     def get_services(self):
         """ gets the list of services and filters out the black listed """
@@ -188,7 +188,7 @@ class Cioban():
         for blacklist_service in self.settings['blacklist']:
             for service in services:
                 if service.name == blacklist_service:
-                    self.logger.debug('Blacklisted {}'.format(blacklist_service))
+                    self.logger.info('Blacklisted {}'.format(blacklist_service))
                     services.remove(service)
         return services
 

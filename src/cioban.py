@@ -148,14 +148,12 @@ class Cioban():
                     pause.seconds(1)
                 else:
                     updating = False
-            if service.attrs.get('PreviousSpec'):
-                current_image = service.attrs['PreviousSpec']['TaskTemplate']['ContainerSpec']['Image']
-                previous_image = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
-                if current_image == previous_image:
-                    self.logger.info('No updates for service {}'.format(service.name))
-                else:
-                    self.logger.warning('Service {} has been updated'.format(service.name))
-                    prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(1)
+            current_image = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
+            if current_image == image_with_digest:
+                self.logger.info('No updates for service {}'.format(service.name))
+            else:
+                self.logger.warning('Service {} has been updated'.format(service.name))
+                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(1)
 
     def logging(self):
         """ Configures the logging """

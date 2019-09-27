@@ -10,7 +10,6 @@ import subprocess
 import pygelf
 import pause
 import docker
-import requests
 from prometheus_client import start_http_server
 import constants
 import prometheus
@@ -143,7 +142,7 @@ class Cioban():
         for service in services:
             try:
                 prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(0)
-            except requests.exceptions.HTTPError as err:
+            except docker.errors.NotFound as err:
                 self.logger.exception('Exception caught: {}'.format(err))
                 self.logger.warning('A service disappeared. Reloading the service list.')
                 services = self.get_services()

@@ -10,6 +10,7 @@ import subprocess
 import pygelf
 import pause
 import docker
+import requests
 from prometheus_client import start_http_server
 import constants
 import prometheus
@@ -26,6 +27,7 @@ class Cioban():
 
     def __init__(self):
         self.logging()
+        # pylint: disable=no-member
         prometheus.PROM_INFO.info({'version': constants.VERSION})
         if self.settings['filters']:
             self.logger.warning('FILTER_SERVICES="{}"'.format(self.settings['filters']))
@@ -45,8 +47,10 @@ class Cioban():
         self.logger.warning('PORT="{}"'.format(self.settings['prometheus_port']))
 
         if os.environ.get("VERBOSE"):
+            # pylint: disable=no-member
             self.logger.warning(constants.VERBOSE_DEPRECATION)
         if os.environ.get("DISABLE_HEARTBEAT"):
+            # pylint: disable=no-member
             self.logger.warning(constants.DISABLE_HEARTBEAT_DEPRECATION)
 
         self.run()
@@ -74,6 +78,7 @@ class Cioban():
         """ prepares the run and then triggers it. this is the actual loop """
         self.logger.warning(
             "Starting cioban {} with prometheus metrics on port {}".format(
+                # pylint: disable=no-member
                 constants.VERSION,
                 self.settings['prometheus_port']
             )
@@ -113,6 +118,7 @@ class Cioban():
                     service_id
                 ],
                 capture_output=True,
+                check=False,
             )
         except subprocess.CalledProcessError as err:
             self.logger.exception('Exception caught: {}'.format(err))
@@ -135,7 +141,12 @@ class Cioban():
         services = self.get_services()
         # prometheus metrics first
         for service in services:
-            prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(0)
+            try:
+                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(0)
+            except requests.exceptions.HTTPError as err:
+                self.logger.exception('Exception caught: {}'.format(err))
+                self.logger.warning('A service disappeared. Reloading the service list.')
+                services = self.get_services()
         for service in services:
             image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
             image = image_with_digest.split('@', 1)[0]

@@ -149,10 +149,18 @@ class Cioban():
         for service in services:
             image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
             image = image_with_digest.split('@', 1)[0]
-            self._update_service(service_id=service.id, image=image, service_name=service.name)
+            service_name = service.name
+            self._update_service(service_id=service.id, image=image, service_name=service_name)
             updating = True
             while updating:
-                service.reload()
+                try:
+                    service.reload()
+                except docker.errors.NotFound as err:
+                    self.logger.exception('Exception caught: {}'.format(err))
+                    self.logger.warning('Service {} disappeared. Reloading the service list.'.format(service_name))
+                    services = self.get_services()
+                    break
+
                 if service.attrs.get('UpdateStatus') and service.attrs['UpdateStatus'].get('State') == 'updating':
                     self.logger.info('Service {} is in status `updating`. Waiting 1s...'.format(service.name))
                     pause.seconds(1)

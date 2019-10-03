@@ -120,7 +120,7 @@ class Cioban():
                 check=False,
             )
         except subprocess.CalledProcessError as err:
-            self.logger.exception('Exception caught: {}'.format(err))
+            self.logger.error('Exception caught: {}'.format(err))
         else:
             if update_run.returncode > 0:
                 self.logger.error('Command exited with return code {} for service {}'.format(
@@ -140,11 +140,12 @@ class Cioban():
         services = self.get_services()
         # prometheus metrics first
         for service in services:
+            service_name = service.name
             try:
-                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(0)
+                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id, service.short_id).inc(0)
             except docker.errors.NotFound as err:
-                self.logger.exception('Exception caught: {}'.format(err))
-                self.logger.warning('A service disappeared. Reloading the service list.')
+                self.logger.error('Exception caught: {}'.format(err))
+                self.logger.warning('Service {} disappeared. Reloading the service list.'.format(service_name))
                 services = self.get_services()
         for service in services:
             image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
@@ -156,7 +157,7 @@ class Cioban():
                 try:
                     service.reload()
                 except docker.errors.NotFound as err:
-                    self.logger.exception('Exception caught: {}'.format(err))
+                    self.logger.error('Exception caught: {}'.format(err))
                     self.logger.warning('Service {} disappeared. Reloading the service list.'.format(service_name))
                     services = self.get_services()
                     break

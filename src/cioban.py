@@ -136,7 +136,6 @@ class Cioban():
                 self.logger.error('Command STDERR: {}'.format(update_run.stderr))
             if update_run.stdout:
                 self.logger.debug('Command STDOUT: {}'.format(update_run.stdout))
-        finally:
             self.logger.debug('Update command: {}'.format(json.dumps(update_run.args)))
 
     @prometheus.PROM_UPDATE_SUMMARY.time()

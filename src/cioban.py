@@ -22,6 +22,7 @@ class Cioban():
         'blacklist': os.environ.get('BLACKLIST_SERVICES', []),
         'sleep_time': os.environ.get('SLEEP_TIME', '5m'),
         'prometheus_port': int(os.environ.get('PORT', 9308)),
+        'timeout': int(os.environ.get('TIMEOUT', 60)),
     }
 
     def __init__(self):
@@ -44,6 +45,7 @@ class Cioban():
         self.configure_sleep()
         self.logger.warning('SLEEP_TIME="{}"'.format(self.settings['sleep_time']))
         self.logger.warning('PORT="{}"'.format(self.settings['prometheus_port']))
+        self.logger.warning('TIMEOUT={}'.format(self.settings['timeout']))
 
         if os.environ.get("VERBOSE"):
             # pylint: disable=no-member
@@ -118,7 +120,7 @@ class Cioban():
                 ],
                 capture_output=True,
                 check=False,
-                timeout=60,
+                timeout=self.settings['timeout'],
             )
         except subprocess.TimeoutExpired:
             self.logger.warning('Timeout updating service {}. Skipping this round.'.format(service_name))

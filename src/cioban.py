@@ -118,7 +118,10 @@ class Cioban():
                 ],
                 capture_output=True,
                 check=False,
+                timeout=60,
             )
+        except subprocess.TimeoutExpired:
+            self.logger.warning('Timeout updating service {}. Skipping this round.'.format(service_name))
         except subprocess.CalledProcessError as err:
             self.logger.error('Exception caught: {}'.format(err))
         else:

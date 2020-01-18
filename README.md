@@ -43,6 +43,14 @@ You can enable private registry authentication by mounting your credentials file
 
 Cioban will try to update your services every 5 minutes by default. The following environment settings are recognized:
 
+## Tags and Arch
+
+Starting with version 0.8.0, the images are multi-arch, with builds for amd64, arm64 and armv7.
+* `vN.N.N` - for example 0.8.0
+* `latest` - always pointing to the latest version
+* `dev-branch` - the last build on a feature/development branch
+* `dev-master` - the last build on the master branch
+
 ### Environment
 
 | **Variable**         | **Default** | **Description**                                                                                         |

@@ -6,4 +6,5 @@ variables:
   ENABLE_ARMv7: 'true'
 
 include:
-  - remote: https://gitlab.com/ix.ai/ci-templates/raw/master/python-project.yml
+  - project: 'ix.ai/ci-templates'
+    file: '/python-project.yml'

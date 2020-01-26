@@ -1,6 +1,6 @@
 FROM docker:latest
-
-LABEL maintainer='ix.ai <docker@ix.ai>'
+LABEL maintainer="docker@ix.ai" \
+      ai.ix.repository="ix.ai/cioban"
 
 ARG PORT='9308'
 

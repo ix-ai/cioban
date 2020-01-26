@@ -1,4 +1,4 @@
 prometheus_client==0.7.1
 docker==4.1.0
 pause==0.2
-pygelf
+pygelf==0.3.6

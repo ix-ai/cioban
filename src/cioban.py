@@ -14,6 +14,8 @@ from prometheus_client import start_http_server
 import constants
 import prometheus
 
+FILENAME = os.path.splitext(sys.modules['__main__'].__file__)[0][1:]
+
 
 class Cioban():
     """ The main class """
@@ -78,7 +80,8 @@ class Cioban():
     def run(self):
         """ prepares the run and then triggers it. this is the actual loop """
         self.logger.warning(
-            "Starting cioban {} with prometheus metrics on port {}".format(
+            "Starting {} {} with prometheus metrics on port {}".format(
+                FILENAME,
                 # pylint: disable=no-member
                 constants.VERSION,
                 self.settings['prometheus_port']
@@ -196,7 +199,7 @@ class Cioban():
                 port=int(os.environ.get('GELF_PORT', 12201)),
                 debug=True,
                 include_extra_fields=True,
-                _ix_id=os.path.splitext(sys.modules['__main__'].__file__)[0][1:],
+                _ix_id=FILENAME,
             )
             self.logger.addHandler(GELF)
             gelf_enabled = True

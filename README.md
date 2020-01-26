@@ -173,6 +173,7 @@ Starting with version 0.8.1, the images are multi-arch, with builds for amd64, a
 
 ## Resources
 * GitLab: https://gitlab.com/ix.ai/cioban
+* GitHub: https://github.com/ix-ai/cioban
 * Docker Hub: https://hub.docker.com/r/ixdotai/cioban
 * ix.ai CI templates: https://gitlab.com/ix.ai/ci-templates
 

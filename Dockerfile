@@ -2,17 +2,13 @@ FROM docker:latest
 LABEL maintainer="docker@ix.ai" \
       ai.ix.repository="ix.ai/cioban"
 
-ARG PORT='9308'
-
-WORKDIR /app
-
-COPY src/ /app
+COPY cioban/requirements.txt /cioban/requirements.txt
 
 RUN apk add --no-cache python3 && \
-    pip3 install --no-cache-dir -r requirements.txt
+    pip3 install --no-cache-dir -r /cioban/requirements.txt
 
-ENV PORT=${PORT}
+COPY cioban/ /cioban
 
-EXPOSE ${PORT}
+EXPOSE 9308
 
-ENTRYPOINT ["python3", "/app/cioban.py"]
+ENTRYPOINT ["python3", "-m", "cioban"]

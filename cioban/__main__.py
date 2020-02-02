@@ -5,16 +5,16 @@
 import logging
 import os
 import sys
-import json
-import subprocess
+# import json
+# import subprocess
 import pygelf
 import pause
 import docker
 from prometheus_client import start_http_server
-import constants
-import prometheus
+from .lib import constants
+from .lib import prometheus
 
-FILENAME = os.path.splitext(sys.modules['__main__'].__file__)[0][1:]
+FILENAME = os.path.splitext(sys.modules['__main__'].__file__)[0]
 
 
 class Cioban():
@@ -29,7 +29,7 @@ class Cioban():
 
     def __init__(self):
         self.logging()
-        # pylint: disable=no-member
+
         prometheus.PROM_INFO.info({'version': constants.VERSION})
         if self.settings['filters']:
             self.logger.warning('FILTER_SERVICES="{}"'.format(self.settings['filters']))
@@ -48,13 +48,6 @@ class Cioban():
         self.logger.warning('SLEEP_TIME="{}"'.format(self.settings['sleep_time']))
         self.logger.warning('PORT="{}"'.format(self.settings['prometheus_port']))
         self.logger.warning('TIMEOUT={}'.format(self.settings['timeout']))
-
-        if os.environ.get("VERBOSE"):
-            # pylint: disable=no-member
-            self.logger.warning(constants.VERBOSE_DEPRECATION)
-        if os.environ.get("DISABLE_HEARTBEAT"):
-            # pylint: disable=no-member
-            self.logger.warning(constants.DISABLE_HEARTBEAT_DEPRECATION)
 
         self.run()
 
@@ -80,11 +73,11 @@ class Cioban():
     def run(self):
         """ prepares the run and then triggers it. this is the actual loop """
         self.logger.warning(
-            "Starting {} {} with prometheus metrics on port {}".format(
-                FILENAME,
-                # pylint: disable=no-member
+            "Starting {} {}-{} with prometheus metrics on port {}".format(
+                __package__,
                 constants.VERSION,
-                self.settings['prometheus_port']
+                constants.BUILD,
+                self.settings['prometheus_port'],
             )
         )
         self.docker = docker.from_env()
@@ -98,48 +91,16 @@ class Cioban():
             wait = getattr(pause, self.sleep_type)
             wait(self.sleep)
 
-    def _update_service(self, service_id, image, service_name):
-        """ updates a service to a specific image """
-        self.logger.info('Trying to update service {} (id: {}) with image {}'.format(service_name, service_id, image))
-        # Ideally this would work:
-        #   service.update(image=image)
-        # or:
-        #   self.docker.api.update_service(
-        #       service=service.id,
-        #       version=service.version,
-        #       fetch_current_spec=True,
-        #       task_template=docker.types.TaskTemplate(service.attrs["Spec"]["TaskTemplate"]["ContainerSpec"]),
-        #   )
-        # but instead, we need to run (see https://github.com/docker/docker-py/issues/2422):
-        try:
-            update_run = subprocess.run(
-                args=[
-                    'docker',
-                    'service',
-                    'update',
-                    '--with-registry-auth',
-                    '--image={}'.format(image),
-                    service_id
-                ],
-                capture_output=True,
-                check=False,
-                timeout=self.settings['timeout'],
-            )
-        except subprocess.TimeoutExpired:
-            self.logger.warning('Timeout updating service {}. Skipping this round.'.format(service_name))
-        except subprocess.CalledProcessError as err:
-            self.logger.error('Exception caught: {}'.format(err))
-        else:
-            if update_run.returncode > 0:
-                self.logger.error('Command exited with return code {} for service {}'.format(
-                    update_run.returncode,
-                    service_name
-                ))
-            if update_run.stderr:
-                self.logger.error('Command STDERR: {}'.format(update_run.stderr))
-            if update_run.stdout:
-                self.logger.debug('Command STDOUT: {}'.format(update_run.stdout))
-            self.logger.debug('Update command: {}'.format(json.dumps(update_run.args)))
+    def _update_image(self, image, image_sha):
+        """ checks if an image has an update """
+        registry_data = self.docker.images.get_registry_data(image)
+        digest = registry_data.attrs['Descriptor']['digest']
+        updated_image = '{}@{}'.format(image, digest)
+        if image_sha == digest:
+            updated_image = False
+            self.logger.debug('{}@{}: No update available'.format(image, image_sha))
+
+        return updated_image
 
     @prometheus.PROM_UPDATE_SUMMARY.time()
     def _run(self):
@@ -156,9 +117,21 @@ class Cioban():
                 services = self.get_services()
         for service in services:
             image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
-            image = image_with_digest.split('@', 1)[0]
-            service_name = service.name
-            self._update_service(service_id=service.id, image=image, service_name=service_name)
+            image_parts = image_with_digest.split('@', 1)
+            image = image_parts[0]
+            image_sha = None
+
+            # if there's no sha in the image name, restart the service _with_ sha
+            try:
+                image_sha = image_parts[1]
+            except IndexError:
+                pass
+
+            update_image = self._update_image(image_sha=image_sha, image=image)
+            if update_image:
+                self.logger.info('Updating service {} with image {}'.format(service.name, update_image))
+                service.update(image=update_image, force_update=True)
+
             updating = True
             while updating:
                 try:
@@ -183,9 +156,8 @@ class Cioban():
 
     def logging(self):
         """ Configures the logging """
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__package__)
         loglevel = os.environ.get('LOGLEVEL', 'WARNING')
-        gelf_enabled = False
         logging.basicConfig(
             stream=sys.stdout,
             level=loglevel,
@@ -202,9 +174,8 @@ class Cioban():
                 _ix_id=FILENAME,
             )
             self.logger.addHandler(GELF)
-            gelf_enabled = True
             self.logger.warning('LOGLEVEL="{}"'.format(loglevel))
-            self.logger.warning('Initialized logging with GELF enabled: {}'.format(gelf_enabled))
+            self.logger.warning('Initialized logging with GELF enabled')
 
     def get_services(self):
         """ gets the list of services and filters out the black listed """

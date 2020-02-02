@@ -143,13 +143,13 @@ class Cioban():
                     break
 
                 if service.attrs.get('UpdateStatus') and service.attrs['UpdateStatus'].get('State') == 'updating':
-                    self.logger.info('Service {} is in status `updating`. Waiting 1s...'.format(service.name))
+                    self.logger.debug('Service {} is in status `updating`. Waiting 1s...'.format(service.name))
                     pause.seconds(1)
                 else:
                     updating = False
             current_image = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
             if current_image == image_with_digest:
-                self.logger.info('No updates for service {}'.format(service.name))
+                self.logger.debug('No updates for service {}'.format(service.name))
             else:
                 self.logger.warning('Service {} has been updated'.format(service.name))
                 prometheus.PROM_SVC_UPDATE_COUNTER.labels(service.name, service.id, service.short_id).inc(1)

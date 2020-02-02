@@ -1,0 +1,19 @@
+services:
+  csp:
+    image: registry.gitlab.com/ix.ai/csp:dev-master
+    networks:
+      - traefik-web
+    deploy:
+      restart_policy:
+        delay: 5s
+      labels:
+        ai.ix.auto-update: 'true'
+
+version: "3.7"
+
+networks:
+  traefik-web:
+    attachable: true
+    driver: overlay
+    driver_opts:
+      encrypted: 'true'

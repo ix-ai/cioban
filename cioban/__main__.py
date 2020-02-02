@@ -24,7 +24,6 @@ class Cioban():
         'blacklist': os.environ.get('BLACKLIST_SERVICES', []),
         'sleep_time': os.environ.get('SLEEP_TIME', '5m'),
         'prometheus_port': int(os.environ.get('PORT', 9308)),
-        'timeout': int(os.environ.get('TIMEOUT', 60)),
     }
 
     def __init__(self):
@@ -47,7 +46,6 @@ class Cioban():
         self.configure_sleep()
         self.logger.warning('SLEEP_TIME="{}"'.format(self.settings['sleep_time']))
         self.logger.warning('PORT="{}"'.format(self.settings['prometheus_port']))
-        self.logger.warning('TIMEOUT={}'.format(self.settings['timeout']))
 
         self.run()
 
@@ -157,7 +155,7 @@ class Cioban():
     def logging(self):
         """ Configures the logging """
         self.logger = logging.getLogger(__package__)
-        loglevel = os.environ.get('LOGLEVEL', 'WARNING')
+        loglevel = os.environ.get('LOGLEVEL', 'INFO')
         logging.basicConfig(
             stream=sys.stdout,
             level=loglevel,

@@ -47,11 +47,10 @@ Cioban will try to update your services every 5 minutes by default. The followin
 
 | **Variable**         | **Default** | **Description**                                                                                         |
 |:---------------------|:-----------:|:--------------------------------------------------------------------------------------------------------|
-| `SLEEP_TIME`         | `5s`        | Adjust the sleeping time. Accepted are numbers ending in one of `s`, `m`, `h`, `d`, `w`                 |
-| `TIMEOUT`            | `60`        | Timeout in seconds for the update command                                                               |
+| `SLEEP_TIME`         | `5m`        | Adjust the sleeping time. Accepted are numbers ending in one of `s`, `m`, `h`, `d`, `w`                 |
 | `BLACKLIST_SERVICES` | -           | Space-separated list of service names to exclude from updates                                           |
 | `FILTER_SERVICES`    | -           | Anything accepted by the filtering flag in `docker service ls`. Example: `label=ai.ix.auto-update=true` |
-| `LOGLEVEL`           | `WARNING`   | [Logging Level](https://docs.python.org/3/library/logging.html#levels)                                  |
+| `LOGLEVEL`           | `INFO`      | [Logging Level](https://docs.python.org/3/library/logging.html#levels)                                  |
 | `GELF_HOST`          | -           | If set, GELF UDP logging to this host will be enabled                                                   |
 | `GELF_PORT`          | `12201`     | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging                                         |
 | `PORT`               | `9308`      | The port for prometheus metrics                                                                         |
@@ -75,7 +74,7 @@ docker service create \
     --env SLEEP_TIME="3m" \
     --env BLACKLIST_SERVICES="cioban karma_karma karma_oauth" \
     --env FILTER_SERVICES="label=com.mydomain.autodeploy=true" \
-    --env LOGLEVEL="INFO" \
+    --env LOGLEVEL="WARNING" \
     --env TIMEOUT="30" \
     --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount type=bind,source=/root/.docker/config.json,target=/root/.docker/config.json,ro \

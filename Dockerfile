@@ -4,11 +4,12 @@ LABEL maintainer="docker@ix.ai" \
 
 COPY cioban/requirements.txt /cioban/requirements.txt
 
-RUN apk add --no-cache python3 && \
+RUN apk add --no-cache python3 py3-cryptography && \
     pip3 install --no-cache-dir -r /cioban/requirements.txt
 
 COPY cioban/ /cioban
+COPY cioban.sh /usr/local/bin/cioban.sh
 
 EXPOSE 9308
 
-ENTRYPOINT ["python3", "-m", "cioban"]
+ENTRYPOINT ["/usr/local/bin/cioban.sh"]

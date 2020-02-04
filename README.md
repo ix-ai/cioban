@@ -6,7 +6,7 @@
 [![Gitlab Project](https://img.shields.io/badge/GitLab-Project-554488.svg)](https://gitlab.com/ix.ai/cioban/)
 
 
-A docker swarm service for automatically updating your services to the latest image tag push.
+A docker swarm service for automatically updating your services to the latest image tag push. You can enable telegram notifications, so you get a message after every successful update.
 
 ## Usage Examples
 
@@ -45,23 +45,28 @@ Cioban will try to update your services every 5 minutes by default. The followin
 
 ### Environment
 
-| **Variable**         | **Default** | **Description**                                                                                         |
-|:---------------------|:-----------:|:--------------------------------------------------------------------------------------------------------|
-| `SLEEP_TIME`         | `5m`        | Adjust the sleeping time. Accepted are numbers ending in one of `s`, `m`, `h`, `d`, `w`                 |
-| `BLACKLIST_SERVICES` | -           | Space-separated list of service names to exclude from updates                                           |
-| `FILTER_SERVICES`    | -           | Anything accepted by the filtering flag in `docker service ls`. Example: `label=ai.ix.auto-update=true` |
-| `LOGLEVEL`           | `INFO`      | [Logging Level](https://docs.python.org/3/library/logging.html#levels)                                  |
-| `GELF_HOST`          | -           | If set, GELF UDP logging to this host will be enabled                                                   |
-| `GELF_PORT`          | `12201`     | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging                                         |
-| `PORT`               | `9308`      | The port for prometheus metrics                                                                         |
+| **Variable**               | **Default** | **Description**                                                                                         |
+|:---------------------------|:-----------:|:--------------------------------------------------------------------------------------------------------|
+| `SLEEP_TIME`               | `5m`        | Adjust the sleeping time. Accepted are numbers ending in one of `s`, `m`, `h`, `d`, `w`|
+| `BLACKLIST_SERVICES`       | -           | Space-separated list of service names to exclude from updates |
+| `FILTER_SERVICES`          | -           | Anything accepted by the filtering flag in `docker service ls`. Example: `label=ai.ix.auto-update=true` |
+| `TELEGRAM_TOKEN`           | -           | See the [Telegram documentation](https://core.telegram.org/bots#creating-a-new-bot) how to get a new token |
+| `TELEGRAM_CHAT_ID`         | -           | See this question on [stackoverflow](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id) |
+| `NOTIFY_INCLUDE_NEW_IMAGE` | -           | Set this variable to anything to include the new image (including digest) in the update notification |
+| `NOTIFY_INCLUDE_OLD_IMAGE` | -           | Set this variable to anything to include the old image (including digest) in the update notification |
+| `LOGLEVEL`                 | `INFO`      | [Logging Level](https://docs.python.org/3/library/logging.html#levels) |
+| `GELF_HOST`                | -           | If set, GELF UDP logging to this host will be enabled |
+| `GELF_PORT`                | `12201`     | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging |
+| `PORT`                     | `9308`      | The port for prometheus metrics |
 
 
 ## Deprecated
 
-The following environment variables are deprecated:
+The following environment variables are deprecated and have been removed:
 
 | **Variable**        | **Description**                                                                                |
 |:--------------------|:-----------------------------------------------------------------------------------------------|
+| `TIMEOUT`           | Timeout in seconds for the update command                                                      |
 | `VERBOSE`           | Displayed the log messages about the update tries                                              |
 | `DISABLE_HEARTBEAT` | Disabled the `HEARTBEAT: Sleeping ${SLEEP_TIME}` and `HEARTBEAT: Starting update run` messages |
 
@@ -76,6 +81,10 @@ docker service create \
     --env FILTER_SERVICES="label=com.mydomain.autodeploy=true" \
     --env LOGLEVEL="WARNING" \
     --env TIMEOUT="30" \
+    --env TELEGRAM_TOKEN="000000000:zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" \
+    --env TELEGRAM_CHAT_ID="-0000000000000" \
+    --env NOTIFY_INCLUDE_NEW_IMAGE="yes please" \
+    --env NOTIFY_INCLUDE_OLD_IMAGE="aha" \
     --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount type=bind,source=/root/.docker/config.json,target=/root/.docker/config.json,ro \
     ixdotai/cioban
@@ -84,52 +93,49 @@ docker service create \
 #### Logs:
 With `LOGLEVEL=DEBUG`
 ```
-$ sudo docker service logs -f infra_cioban
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [__init__] FILTER_SERVICES="label=com.mydomain.autodeploy=true"
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [__init__] BLACKLIST_SERVICES="cioban karma_karma karma_oauth"
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [__init__] DISABLE_HEARTBEAT is not set
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [__init__] SLEEP_TIME="3m"
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [run] Starting cioban with prometheus metrics on port 9308
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {config} [find_config_file] Trying paths: ['/root/.docker/config.json', '/root/.dockercfg']
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {config} [find_config_file] Found file at path: /root/.docker/config.json
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {auth} [load_config] Found 'auths' section
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {auth} [parse_auth] Found entry (registry='registry.gitlab.com', username='XXX-REDACTED-XXX')
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {auth} [parse_auth] Auth data for https://index.docker.io/v1/ is absent. Client might be using a credentials store instead.
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {auth} [load_config] Found 'credsStore' section
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [run] Starting update run
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {connectionpool} [_make_request] http://localhost:None "GET /v1.35/services HTTP/1.1" 200 None
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [get_services] Blacklisted karma_karma
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [get_services] Blacklisted karma_oauth
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [_run] Trying to update service smtp_smtp with image registry.gitlab.com/ix.ai/smtp:latest
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [_run] Update command: ["docker", "service", "update", "--with-registry-auth", "--image=registry.gitlab.com/ix.ai/smtp:latest", "pqs6wtscm1tq6yiqrmu4wv0of"]
-infra_cioban.1.w78zwf6k9p3c@docker-a    | DEBUG {cioban} [_run] Update STDOUT: [b'pqs6wtscm1tq6yiqrmu4wv0of\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\ntu9j903lfdkp: host-mode port already in use on 1 node\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 0 out of 1 tasks\noverall progress: 1 out of 1 tasks\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 2 seconds to verify that tasks are stable...\nverify: Waiting 2 seconds to verify that tasks are stable...\nverify: Waiting 2 seconds to verify that tasks are stable...\nverify: Waiting 2 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Service converged]\n'
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {connectionpool} [_make_request] http://localhost:None "GET /v1.35/services/pqs6wtscm1tq6yiqrmu4wv0of HTTP/1.1" 200 None
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [_run] Service smtp_smtp has been updated
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [run] Sleeping for 3 minutes
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [run] Starting update run
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {connectionpool} [_make_request] http://localhost:None "GET /v1.35/services HTTP/1.1" 200 None
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [get_services] Blacklisted karma_karma
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [get_services] Blacklisted karma_oauth
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [_run] Trying to update service smtp_smtp with image registry.gitlab.com/ix.ai/smtp:latest
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [_run] Update command: ["docker", "service", "update", "--with-registry-auth", "--image=registry.gitlab.com/ix.ai/smtp:latest", "pqs6wtscm1tq6yiqrmu4wv0of"]
-infra_cioban.1.w78zwf6k9p3c@docker-a    | DEBUG {cioban} [_run] Update STDOUT: b'pqs6wtscm1tq6yiqrmu4wv0of\noverall progress: 0 out of 1 tasks\noverall progress: 1 out of 1 tasks\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 5 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 4 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 3 seconds to verify that tasks are stable...\nverify: Waiting 2 seconds to verify that tasks are stable...\nverify: Waiting 2 seconds to verify that tasks are stable...\nverify: Waiting 2 seconds to verify that tasks are stable...\nverify: Waiting 2 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Waiting 1 seconds to verify that tasks are stable...\nverify: Service converged\n'
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {connectionpool} [_make_request] http://localhost:None "GET /v1.35/services/pqs6wtscm1tq6yiqrmu4wv0of HTTP/1.1" 200 None
-infra_cioban.1.w78zwf6k9p3c@docker-a    | INFO {cioban} [_run] No updates for service smtp_smtp
-infra_cioban.1.w78zwf6k9p3c@docker-a    | WARNING {cioban} [run] Sleeping for 3 minutes
-```
-With `LOGLEVEL=WARNING`
-```
-$ sudo docker service logs -f infra_cioban
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [__init__] FILTER_SERVICES="label=com.mydomain.autodeploy=true"
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [__init__] BLACKLIST_SERVICES="cioban karma_karma karma_oauth"
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [__init__] DISABLE_HEARTBEAT is not set
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [__init__] SLEEP_TIME="3m"
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [run] Starting cioban with prometheus metrics on port 9308
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [run] Starting update run
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [_run] Service smtp_smtp has been updated
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [run] Sleeping for 3 minutes
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [run] Starting update run
-infra_cioban.1.vr1ef401y9ql@docker-a    | WARNING {cioban} [run] Sleeping for 3 minutes
+2020-02-04 07:17:01.446 INFO [__main__.<module>] FILTER_SERVICES: "{'label': 'ai.ix.auto-update=true'}"
+2020-02-04 07:17:01.446 INFO [__main__.<module>] BLACKLIST_SERVICES: "['websites_tool-ix-ai']"
+2020-02-04 07:17:01.446 INFO [__main__.<module>] TELEGRAM_TOKEN is set
+2020-02-04 07:17:01.446 INFO [__main__.<module>] TELEGRAM_CHAT_ID is set
+2020-02-04 07:17:01.446 INFO [__main__.<module>] NOTIFY_INCLUDE_NEW_IMAGE is set
+2020-02-04 07:17:01.446 INFO [__main__.<module>] NOTIFY_INCLUDE_OLD_IMAGE is set
+2020-02-04 07:17:01.446 INFO [__main__.<module>] SLEEP_TIME: 10s
+2020-02-04 07:17:01.446 INFO [__main__.<module>] PORT: 9308
+2020-02-04 07:17:01.447 WARNING [__main__.<module>] Starting cioban None-None with prometheus metrics on port 9308
+2020-02-04 07:17:01.447 DEBUG [core.register] Registering telegram
+2020-02-04 07:17:01.634 DEBUG [telegram_notifier.__init__] Initialized
+2020-02-04 07:17:01.634 DEBUG [core.register] Registered telegram
+2020-02-04 07:17:01.634 DEBUG [cioban.__init__] Registered telegram
+2020-02-04 07:17:01.634 DEBUG [cioban.__init__] Cioban initialized
+2020-02-04 07:17:01.646 INFO [cioban.run] Starting update run
+2020-02-04 07:17:01.669 DEBUG [cioban.get_services] Blacklisted websites_tool-ix-ai
+2020-02-04 07:17:03.996 DEBUG [cioban.__get_updated_image] containous/whoami:latest@sha256:c0d68a0f9acde95c5214bd057fd3ff1c871b2ef12dae2a9e2d2a3240fdd9214b: No update available
+2020-02-04 07:17:03.997 INFO [cioban.run] Sleeping for 10 seconds
+2020-02-04 07:17:13.997 INFO [cioban.run] Starting update run
+2020-02-04 07:17:14.014 DEBUG [cioban.get_services] Blacklisted websites_tool-ix-ai
+2020-02-04 07:17:16.427 INFO [cioban.__update_image] Updating service websites_whoami with image containous/whoami:latest@sha256:c0d68a0f9acde95c5214bd057fd3ff1c871b2ef12dae2a9e2d2a3240fdd9214b
+2020-02-04 07:17:16.532 WARNING [cioban.__update_image] Service websites_whoami has been updated
+2020-02-04 07:17:16.543 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:17.558 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:18.568 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:19.578 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:20.586 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:21.599 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:22.607 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:23.620 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:24.630 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:25.640 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
+2020-02-04 07:17:26.649 DEBUG [cioban._run] Service websites_whoami has converged.
+2020-02-04 07:17:26.649 DEBUG [core.notify] Sending notification
+2020-02-04 07:17:26.649 DEBUG [telegram_notifier.notify] Sending notification to telegram
+2020-02-04 07:17:26.840 INFO [telegram_notifier.__post_message] Sent message to telegram.
+2020-02-04 07:17:26.840 DEBUG [telegram_notifier.__post_message] Message: ☑ <b>CIOBAN: Service Updated</b> ☑
+<b>Service Name</b>: websites_whoami
+<b>Service Short Id</b>: z76ynth8m3
+<b>Old Image</b>: containous/whoami:latest
+<b>New Image</b>: containous/whoami:latest@sha256:c0d68a0f9acde95c5214bd057fd3ff1c871b2ef12dae2a9e2d2a3240fdd9214b
+
+2020-02-04 07:17:26.841 INFO [cioban.run] Sleeping for 10 seconds
 ```
 ### Prometheus metrics
 
@@ -156,11 +162,11 @@ cioban_state{cioban_state="sleeping"} 1.0
 ```
 
 ## How does it work?
-Cioban just triggers updates by updating the image specification for each service, removing the current digest.
+Cioban just triggers updates by checking the registry for a different digest than the current running image. If the current image does not have a digest, the service gets restarted with a digest.
 
-Most of the work is done by Docker which [resolves the image tag, checks the registry for a newer version and updates running container tasks as needed](https://docs.docker.com/engine/swarm/services/#update-a-services-image-after-creation).
+Cioban is handling connecting to the registry, getting the information about the image, comparing it with the running version. The update is done by docker and cioban moves forward once the service is not in status `updating` anymore.
 
-Also, Docker handles all the work of [applying rolling updates](https://docs.docker.com/engine/swarm/swarm-tutorial/rolling-update/). So at least with replicated services, there should be no noticeable downtime.
+Docker handles all the work of [applying rolling updates](https://docs.docker.com/engine/swarm/swarm-tutorial/rolling-update/). So at least with replicated services, there should be no noticeable downtime.
 
 ## Tags and Arch
 

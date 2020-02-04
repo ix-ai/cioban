@@ -89,7 +89,7 @@ class Cioban():
         try:
             registry_data = self.docker.images.get_registry_data(image)
         except docker.errors.APIError as error:
-            log.error(f'{error}')
+            log.error(f'Failed to retrieve the registry data for {image}. The error: {error}')
 
         if registry_data:
             digest = registry_data.attrs['Descriptor']['digest']

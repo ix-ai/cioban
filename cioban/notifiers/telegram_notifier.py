@@ -58,9 +58,12 @@ class Notifier():
     def notify(self, title="CIOBAN: Service Updated", **kwargs):
         """ parses the arguments, formats the message and dispatches it """
         log.debug('Sending notification to telegram')
-        message = '{0} <b>{1}</b> {0}\n'.format(u'\U00002611', title)
-        for k, v in kwargs.items():
-            message += '<b>{}</b>: {}\n'.format(core.key_to_title(k), v)
+        message = f'<b>{title}</b>\n'
+        if kwargs.get('message'):
+            message += kwargs['message']
+        else:
+            for k, v in kwargs.items():
+                message += f'{core.key_to_title(k)}: {v}\n'
         self.__post_message(message)
 
     def noop(self):

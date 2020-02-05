@@ -6,7 +6,7 @@
 [![Gitlab Project](https://img.shields.io/badge/GitLab-Project-554488.svg)](https://gitlab.com/ix.ai/cioban/)
 
 
-A docker swarm service for automatically updating your services to the latest image tag push. You can enable telegram notifications, so you get a message after every successful update.
+A docker swarm service for automatically updating your services to the latest image tag push. You can enable telegram or gotify notifications, so you get a message after every successful update.
 
 ## Usage Examples
 
@@ -52,6 +52,8 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | `FILTER_SERVICES`          | -           | Anything accepted by the filtering flag in `docker service ls`. Example: `label=ai.ix.auto-update=true` |
 | `TELEGRAM_TOKEN`           | -           | See the [Telegram documentation](https://core.telegram.org/bots#creating-a-new-bot) how to get a new token |
 | `TELEGRAM_CHAT_ID`         | -           | See this question on [stackoverflow](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id) |
+| `GOTIFY_URL`               | -           | The URL of the [Gotify](https://gotify.net/) server |
+| `GOTIFY_TOKEN`             | -           | The APP token for Gotify |
 | `NOTIFY_INCLUDE_NEW_IMAGE` | -           | Set this variable to anything to include the new image (including digest) in the update notification |
 | `NOTIFY_INCLUDE_OLD_IMAGE` | -           | Set this variable to anything to include the old image (including digest) in the update notification |
 | `LOGLEVEL`                 | `INFO`      | [Logging Level](https://docs.python.org/3/library/logging.html#levels) |

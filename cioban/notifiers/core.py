@@ -27,6 +27,7 @@ class CoreNotifiers():
 
     notifiers = [
         'telegram',
+        'gotify',
     ]
 
     registered = []

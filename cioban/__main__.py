@@ -38,6 +38,14 @@ if __name__ == '__main__':
         options['telegram_chat_id'] = os.environ.get('TELEGRAM_CHAT_ID')
         log.info('TELEGRAM_CHAT_ID is set')
 
+    if os.environ.get('GOTIFY_URL'):
+        options['gotify_url'] = os.environ.get('GOTIFY_URL')
+        log.info(f"GOTIFY_URL: {options['gotify_url']}")
+
+    if os.environ.get('GOTIFY_TOKEN'):
+        options['gotify_token'] = os.environ.get('GOTIFY_TOKEN')
+        log.info(f"GOTIFY_TOKEN is set")
+
     if os.environ.get('NOTIFY_INCLUDE_NEW_IMAGE'):
         options['notify_include_new_image'] = True
         log.info('NOTIFY_INCLUDE_NEW_IMAGE is set')
@@ -48,6 +56,9 @@ if __name__ == '__main__':
 
     if options.get('telegram_token') and options.get('telegram_chat_id'):
         options['notifiers'].append('telegram')
+
+    if options.get('gotify_url') and options.get('gotify_token'):
+        options['notifiers'].append('gotify')
 
     options['sleep_time'] = os.environ.get('SLEEP_TIME', '5m')
     log.info(f"SLEEP_TIME: {options['sleep_time']}")

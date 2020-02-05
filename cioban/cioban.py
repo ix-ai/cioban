@@ -3,6 +3,7 @@
 """ A docker swarm service for automatically updating your services to the latest image tag push. """
 
 import logging
+import requests
 import pause
 import docker
 from prometheus_client import start_http_server
@@ -85,7 +86,7 @@ class Cioban():
         updated_image = None
         try:
             registry_data = self.docker.images.get_registry_data(image)
-        except docker.errors.APIError as error:
+        except (docker.errors.APIError, requests.exceptions.ReadTimeout) as error:
             log.error(f'Failed to retrieve the registry data for {image}. The error: {error}')
 
         if registry_data:

@@ -21,8 +21,6 @@ class Cioban():
         'sleep_time': '5m',
         'prometheus_port': 9308,
         'notifiers': [],
-        'telegram_chat_id': None,
-        'telegram_token': None,
         'notify_include_new_image': False,
         'notify_include_old_image': False,
     }
@@ -34,7 +32,7 @@ class Cioban():
             if k in self.settings:
                 self.settings[k] = v
             else:
-                log.debug(f'{k} not found in settings')
+                log.debug(f'{k} not found in settings. Ignoring.')
 
         prometheus.PROM_INFO.info({'version': f'{constants.VERSION}'})
 
@@ -66,7 +64,6 @@ class Cioban():
                     if notifier.lower() in k.lower():
                         notifier_options.update({k.lower(): v})
                 self.notifiers.register(notifier, **notifier_options)
-                log.debug('Registered {}'.format(notifier))
 
         log.debug('Cioban initialized')
 
@@ -191,3 +188,7 @@ class Cioban():
                     log.debug(f'Blacklisted {blacklist_service}')
                     services.remove(service)
         return services
+
+    def notify(self, **kwargs):
+        """ Sends a notification through the registered notifiers """
+        self.notifiers.notify(**kwargs)

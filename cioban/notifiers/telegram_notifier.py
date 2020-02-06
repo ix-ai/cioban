@@ -55,7 +55,7 @@ class Notifier():
                 log.error(f"Failed to send message! Exception: {error}")
                 retry = False
 
-    def notify(self, title="CIOBAN: Service Updated", **kwargs):
+    def notify(self, title="", **kwargs):
         """ parses the arguments, formats the message and dispatches it """
         log.debug('Sending notification to telegram')
         message = f'<b>{title}</b>\n'

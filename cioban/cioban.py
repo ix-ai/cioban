@@ -178,7 +178,7 @@ class Cioban():
                     notify['old_image'] = image_with_digest
                 if self.settings['notify_include_new_image']:
                     notify['new_image'] = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
-                self.notifiers.notify(**notify)
+                self.notify(**notify)
 
     def get_services(self):
         """ gets the list of services and filters out the black listed """

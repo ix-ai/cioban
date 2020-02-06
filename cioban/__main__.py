@@ -75,5 +75,5 @@ if __name__ == '__main__':
     log.warning(startup_message)
 
     c = cioban.Cioban(**options)
-    c.notify(title="CIOBAN Startup", message=startup_message)
+    c.notify(title="Startup", message=startup_message)
     c.run()

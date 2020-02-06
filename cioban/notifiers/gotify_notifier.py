@@ -36,7 +36,7 @@ class Notifier():
             log.info("Sent message to gotify")
             log.debug(f"Message: {message}")
 
-    def notify(self, title="CIOBAN: Service Updated", **kwargs):
+    def notify(self, title="", **kwargs):
         """ parses the arguments, formats the message and dispatches it """
         log.debug('Sending message to gotify')
         message = ""

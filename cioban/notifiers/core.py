@@ -41,9 +41,9 @@ class CoreNotifiers():
                 self.registered.append({notifier: instance.Notifier(**kwargs)})
                 log.debug(f'Registered {notifier}')
 
-    def notify(self, **kwargs):
+    def notify(self, title='Service Updated', **kwargs):
         """ dispatches a notification to the registered notifiers """
         for i in self.registered:
             for notifier in i:
                 log.debug(f'Sending notification to {notifier}')
-                i[notifier].notify(**kwargs)
+                i[notifier].notify(title=f'CIOBAN: {title}', **kwargs)

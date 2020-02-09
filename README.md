@@ -45,21 +45,22 @@ Cioban will try to update your services every 5 minutes by default. The followin
 
 ### Environment
 
-| **Variable**               | **Default** | **Description**                                                                                         |
-|:---------------------------|:-----------:|:--------------------------------------------------------------------------------------------------------|
-| `SLEEP_TIME`               | `5m`        | Adjust the sleeping time. Accepted are numbers ending in one of `s`, `m`, `h`, `d`, `w`|
-| `BLACKLIST_SERVICES`       | -           | Space-separated list of service names to exclude from updates |
-| `FILTER_SERVICES`          | -           | Anything accepted by the filtering flag in `docker service ls`. Example: `label=ai.ix.auto-update=true` |
-| `TELEGRAM_TOKEN`           | -           | See the [Telegram documentation](https://core.telegram.org/bots#creating-a-new-bot) how to get a new token |
-| `TELEGRAM_CHAT_ID`         | -           | See this question on [stackoverflow](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id) |
-| `GOTIFY_URL`               | -           | The URL of the [Gotify](https://gotify.net/) server |
-| `GOTIFY_TOKEN`             | -           | The APP token for Gotify |
-| `NOTIFY_INCLUDE_NEW_IMAGE` | -           | Set this variable to anything to include the new image (including digest) in the update notification |
-| `NOTIFY_INCLUDE_OLD_IMAGE` | -           | Set this variable to anything to include the old image (including digest) in the update notification |
-| `LOGLEVEL`                 | `INFO`      | [Logging Level](https://docs.python.org/3/library/logging.html#levels) |
-| `GELF_HOST`                | -           | If set, GELF UDP logging to this host will be enabled |
-| `GELF_PORT`                | `12201`     | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging |
-| `PORT`                     | `9308`      | The port for prometheus metrics |
+| **Variable**                | **Default** | **Description**                                                                                         |
+|:----------------------------|:-----------:|:--------------------------------------------------------------------------------------------------------|
+| `SLEEP_TIME`                | `5m`        | Adjust the sleeping time. Accepted are numbers ending in one of `s`, `m`, `h`, `d`, `w`|
+| `BLACKLIST_SERVICES`        | -           | Space-separated list of service names to exclude from updates |
+| `FILTER_SERVICES`           | -           | Anything accepted by the filtering flag in `docker service ls`. Example: `label=ai.ix.auto-update=true` |
+| `TELEGRAM_TOKEN`            | -           | See the [Telegram documentation](https://core.telegram.org/bots#creating-a-new-bot) how to get a new token |
+| `TELEGRAM_CHAT_ID`          | -           | See this question on [stackoverflow](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id) |
+| `GOTIFY_URL`                | -           | The URL of the [Gotify](https://gotify.net/) server |
+| `GOTIFY_TOKEN`              | -           | The APP token for Gotify |
+| `NOTIFY_INCLUDE_IMAGE`      | -           | Set this variable to anything to include the image name (without digest) in the update notification |
+| `NOTIFY_INCLUDE_NEW_IMAGE`  | -           | Set this variable to anything to include the new image (**including** digest) in the update notification |
+| `NOTIFY_INCLUDE_OLD_IMAGE`  | -           | Set this variable to anything to include the old image (**including** digest) in the update notification |
+| `LOGLEVEL`                  | `INFO`      | [Logging Level](https://docs.python.org/3/library/logging.html#levels) |
+| `GELF_HOST`                 | -           | If set, GELF UDP logging to this host will be enabled |
+| `GELF_PORT`                 | `12201`     | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging |
+| `PORT`                      | `9308`      | The port for prometheus metrics |
 
 
 ## Deprecated

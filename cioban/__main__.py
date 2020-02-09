@@ -70,7 +70,10 @@ if __name__ == '__main__':
     options['prometheus_port'] = int(os.environ.get('PORT', 9308))
     log.info(f"PORT: {options['prometheus_port']}")
 
-    startup_message = f"Starting {__package__} {version} with prometheus metrics on port {options['prometheus_port']}"
+    startup_message = (
+        f"Starting **{__package__} {version}**"
+        f" with prometheus metrics on port {options['prometheus_port']}"
+    )
     log.warning(startup_message)
 
     c = cioban.Cioban(**options)

@@ -24,6 +24,7 @@ class Notifier():
             resp = requests.post(self.url, json={
                 'title': title,
                 'message': message,
+                'extras': {'client::display': {'contentType': 'text/markdown'}}
             })
         except requests.exceptions.RequestException as e:
             # Print exception if reqeuest fails
@@ -44,7 +45,7 @@ class Notifier():
             message = kwargs['message']
         else:
             for k, v in kwargs.items():
-                message += f'{core.key_to_title(k)}: {v}\n'
+                message += f'**{core.key_to_title(k)}**: `{v}`  \n'
         self.__post_message(title, message)
 
     def noop(self):

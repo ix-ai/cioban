@@ -3,7 +3,6 @@
 """ A docker swarm service for automatically updating your services to the latest image tag push. """
 
 import os
-import sys
 from . import cioban
 from .lib import log as logging
 from .lib import constants
@@ -13,8 +12,9 @@ log = logging.setup_logger(
     level=os.environ.get('LOGLEVEL', 'INFO'),
     gelf_host=os.environ.get('GELF_HOST'),
     gelf_port=int(os.environ.get('GELF_PORT', 12201)),
-    _ix_id=os.environ.get(os.path.splitext(sys.modules['__main__'].__file__)[0]),
+    _ix_id=__package__,
 )
+version = f'{constants.VERSION}-{constants.BUILD}'
 
 if __name__ == '__main__':
     options = {'notifiers': [], 'blacklist': []}
@@ -66,12 +66,7 @@ if __name__ == '__main__':
     options['prometheus_port'] = int(os.environ.get('PORT', 9308))
     log.info(f"PORT: {options['prometheus_port']}")
 
-    startup_message = "Starting {} {}-{} with prometheus metrics on port {}".format(
-        __package__,
-        constants.VERSION,
-        constants.BUILD,
-        options['prometheus_port'],
-    )
+    startup_message = f"Starting {__package__} {version} with prometheus metrics on port {options['prometheus_port']}"
     log.warning(startup_message)
 
     c = cioban.Cioban(**options)

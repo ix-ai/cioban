@@ -18,7 +18,7 @@ def key_to_title(key=""):
     parsed = ""
     keys = key.split('_')
     for k in keys:
-        parsed += '{} '.format(k.capitalize())
+        parsed += f'{k.capitalize()} '
     return parsed[:-1]
 
 

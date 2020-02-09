@@ -22,6 +22,7 @@ class Cioban():
         'sleep_time': '5m',
         'prometheus_port': 9308,
         'notifiers': [],
+        'notify_include_image': False,
         'notify_include_new_image': False,
         'notify_include_old_image': False,
     }
@@ -130,55 +131,50 @@ class Cioban():
         """ the actual run """
         services = self.get_services()
 
-        # prometheus metrics first
         for service in services:
-            service_name = service.name
             try:
-                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id, service.short_id).inc(0)
-            except docker.errors.NotFound:
-                log.warning(f'Service {service_name} disappeared. Reloading the service list.')
-                services = self.get_services()
+                service_name = service.name
+                image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
+                image, image_sha = self.__get_image_parts(image_with_digest)
+                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id, service.short_id, image).inc(0)
+                update_image = self.__get_updated_image(image_sha=image_sha, image=image)
+                service_updated = False
+                if update_image:
+                    service_updated = self.__update_image(service, update_image)
 
-        for service in services:
-            service_name = service.name
-            image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
-            image, image_sha = self.__get_image_parts(image_with_digest)
-            update_image = self.__get_updated_image(image_sha=image_sha, image=image)
-            service_updated = False
-            if update_image:
-                service_updated = self.__update_image(service, update_image)
-
-            if service_updated:
-                updating = True
-                while updating:
-                    try:
+                if service_updated:
+                    updating = True
+                    while updating:
                         service.reload()
                         service_updated = True
-                    except docker.errors.NotFound as error:
-                        log.error(f'Exception caught: {error}')
-                        log.warning('Service {service_name} disappeared. Reloading the service list.')
-                        services = self.get_services()
-                        service_updated = True
-                        break
 
-                    if service.attrs.get('UpdateStatus') and service.attrs['UpdateStatus'].get('State') == 'updating':
-                        log.debug(f'Service {service_name} is in status `updating`. Waiting 1s...')
-                        pause.seconds(1)
-                    else:
-                        log.debug(f'Service {service_name} has converged.')
-                        updating = False
+                        if (
+                                service.attrs.get('UpdateStatus')
+                                and service.attrs['UpdateStatus'].get('State') == 'updating'
+                        ):
+                            log.debug(f'Service {service_name} is in status `updating`. Waiting 1s...')
+                            pause.seconds(1)
+                        else:
+                            log.debug(f'Service {service_name} has converged.')
+                            updating = False
 
-            if service_updated:
-                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id, service.short_id).inc(1)
-                notify = {
-                    'service_name': service_name,
-                    'service_short_id': service.short_id,
-                }
-                if self.settings['notify_include_old_image']:
-                    notify['old_image'] = image_with_digest
-                if self.settings['notify_include_new_image']:
-                    notify['new_image'] = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
-                self.notify(**notify)
+                if service_updated:
+                    prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id, service.short_id, image).inc(1)
+                    notify = {
+                        'service_name': service_name,
+                        'service_short_id': service.short_id,
+                    }
+                    if self.settings['notify_include_image']:
+                        notify['image'] = image
+                    if self.settings['notify_include_old_image']:
+                        notify['old_image'] = image_with_digest
+                    if self.settings['notify_include_new_image']:
+                        notify['new_image'] = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
+                    self.notify(**notify)
+            except docker.errors.NotFound as error:
+                log.error(f'Exception caught: {error}')
+                log.warning('Service {service_name} disappeared. Reloading the service list.')
+                services = self.get_services()
 
     def get_services(self):
         """ gets the list of services and filters out the black listed """

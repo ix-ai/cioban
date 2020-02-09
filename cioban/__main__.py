@@ -46,6 +46,10 @@ if __name__ == '__main__':
         options['gotify_token'] = os.environ.get('GOTIFY_TOKEN')
         log.info(f"GOTIFY_TOKEN is set")
 
+    if os.environ.get('NOTIFY_INCLUDE_IMAGE'):
+        options['notify_include_image'] = True
+        log.info('NOTIFY_INCLUDE_IMAGE is set')
+
     if os.environ.get('NOTIFY_INCLUDE_NEW_IMAGE'):
         options['notify_include_new_image'] = True
         log.info('NOTIFY_INCLUDE_NEW_IMAGE is set')

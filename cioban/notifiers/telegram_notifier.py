@@ -20,13 +20,14 @@ class Notifier():
 
     def __post_message(self, message):
         """ sends the notification to telegram """
+        message = self.replace_characters(message)
         retry = True
         while retry is True:
             try:
                 self.notifier.sendMessage(
                     chat_id=self.chat_id,
                     text=message,
-                    parse_mode='HTML',
+                    parse_mode='Markdown',
                     disable_web_page_preview=True,
                 )
                 log.info("Sent message to telegram.")
@@ -58,13 +59,26 @@ class Notifier():
     def notify(self, title="", **kwargs):
         """ parses the arguments, formats the message and dispatches it """
         log.debug('Sending notification to telegram')
-        message = f'<b>{title}</b>\n'
+        message = f'**{title}**\n'
         if kwargs.get('message'):
             message += kwargs['message']
         else:
             for k, v in kwargs.items():
-                message += f'{core.key_to_title(k)}: {v}\n'
+                message += f"**{core.key_to_title(k)}**: `{v}`  \n"
         self.__post_message(message)
 
-    def noop(self):
-        """ Does nothing """
+    def replace_characters(self, message=""):
+        """
+        replaces standard markdown characters with telegram flavour
+
+        replaces `**` with `*`
+        replaces `__` with `*`
+        """
+        strong_characters = [
+            '**',
+            '__'
+        ]
+        for character in strong_characters:
+            message = message.replace(character, '*')
+
+        return message

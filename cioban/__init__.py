@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+""" sets the logging defaults for cioban """
 
 import os
 from .lib import log as logging

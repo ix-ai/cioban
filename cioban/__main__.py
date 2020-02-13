@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+""" processes the environment variables and starts cioban """
 
 import logging
 from . import cioban

@@ -17,8 +17,8 @@ log = logging.getLogger('cioban')
 class Cioban():
     """ The main class """
     settings = {
-        'filters': {},
-        'blacklist': {},
+        'filter_services': {},
+        'blacklist_services': {},
         'sleep_time': '5m',
         'prometheus_port': 9308,
         'notifiers': [],
@@ -35,9 +35,7 @@ class Cioban():
                 self.settings[k] = v
             else:
                 log.debug(f'{k} not found in settings. Ignoring.')
-
-        prometheus.PROM_INFO.info({'version': f'{constants.VERSION}'})
-
+        prometheus.PROM_INFO.info({'version': f'{constants.VERSION}-{constants.BUILD}'})
         relation = {
             's': 'seconds',
             'm': 'minutes',
@@ -58,16 +56,22 @@ class Cioban():
         else:
             self.sleep = int(self.settings['sleep_time'])
             self.sleep_type = 'minutes'
+        self.register_notifiers(**kwargs)
 
+        log.debug('Cioban initialized')
+
+    def register_notifiers(self, **kwargs):
+        """
+        checks in self.settings['notifiers'] for all the to be registered notifiers then look at all kwargs for any keys
+        beginning with the notifier name. It then registeres the notifier with the options for it.
+        """
         if self.settings.get('notifiers'):
             for notifier in self.settings['notifiers']:
                 notifier_options = {}
                 for k, v in kwargs.items():
-                    if notifier.lower() in k.lower():
+                    if k.lower().startswith(notifier.lower()):
                         notifier_options.update({k.lower(): v})
                 self.notifiers.register(notifier, **notifier_options)
-
-        log.debug('Cioban initialized')
 
     def run(self):
         """ prepares the run and then triggers it. this is the actual loop """
@@ -178,8 +182,8 @@ class Cioban():
 
     def get_services(self):
         """ gets the list of services and filters out the black listed """
-        services = self.docker.services.list(filters=self.settings['filters'])
-        for blacklist_service in self.settings['blacklist']:
+        services = self.docker.services.list(filters=self.settings['filter_services'])
+        for blacklist_service in self.settings['blacklist_services']:
             for service in services:
                 if service.name == blacklist_service:
                     log.debug(f'Blacklisted {blacklist_service}')

@@ -63,16 +63,6 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | `PORT`                      | `9308`      | The port for prometheus metrics |
 
 
-## Deprecated
-
-The following environment variables are deprecated and have been removed:
-
-| **Variable**        | **Description**                                                                                |
-|:--------------------|:-----------------------------------------------------------------------------------------------|
-| `TIMEOUT`           | Timeout in seconds for the update command                                                      |
-| `VERBOSE`           | Displayed the log messages about the update tries                                              |
-| `DISABLE_HEARTBEAT` | Disabled the `HEARTBEAT: Sleeping ${SLEEP_TIME}` and `HEARTBEAT: Starting update run` messages |
-
 ### Example:
 ```sh
 docker service create \

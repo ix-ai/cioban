@@ -76,6 +76,7 @@ class Cioban():
     def run(self):
         """ prepares the run and then triggers it. this is the actual loop """
         start_http_server(self.settings['prometheus_port'])  # starts the prometheus metrics server
+        log.info(f"Listening on port {self.settings['prometheus_port']}")
         while True:
             prometheus.PROM_STATE_ENUM.state('running')
             log.info('Starting update run')

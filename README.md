@@ -54,9 +54,9 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | `TELEGRAM_CHAT_ID`          | -           | See this question on [stackoverflow](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id) |
 | `GOTIFY_URL`                | -           | The URL of the [Gotify](https://gotify.net/) server |
 | `GOTIFY_TOKEN`              | -           | The APP token for Gotify |
-| `NOTIFY_INCLUDE_IMAGE`      | -           | Set this variable to anything to include the image name (without digest) in the update notification |
-| `NOTIFY_INCLUDE_NEW_IMAGE`  | -           | Set this variable to anything to include the new image (**including** digest) in the update notification |
-| `NOTIFY_INCLUDE_OLD_IMAGE`  | -           | Set this variable to anything to include the old image (**including** digest) in the update notification |
+| `NOTIFY_INCLUDE_IMAGE`      | -           | Set this variable to `yes` to include the image name (without digest) in the update notification |
+| `NOTIFY_INCLUDE_NEW_IMAGE`  | -           | Set this variable to `yes` to include the new image (**including** digest) in the update notification |
+| `NOTIFY_INCLUDE_OLD_IMAGE`  | -           | Set this variable to `yes` to include the old image (**including** digest) in the update notification |
 | `LOGLEVEL`                  | `INFO`      | [Logging Level](https://docs.python.org/3/library/logging.html#levels) |
 | `GELF_HOST`                 | -           | If set, GELF UDP logging to this host will be enabled |
 | `GELF_PORT`                 | `12201`     | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging |
@@ -73,63 +73,15 @@ docker service create \
     --env BLACKLIST_SERVICES="cioban karma_karma karma_oauth" \
     --env FILTER_SERVICES="label=com.mydomain.autodeploy=true" \
     --env LOGLEVEL="WARNING" \
-    --env TIMEOUT="30" \
     --env TELEGRAM_TOKEN="000000000:zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" \
     --env TELEGRAM_CHAT_ID="-0000000000000" \
-    --env NOTIFY_INCLUDE_NEW_IMAGE="yes please" \
-    --env NOTIFY_INCLUDE_OLD_IMAGE="aha" \
+    --env NOTIFY_INCLUDE_NEW_IMAGE="yes" \
+    --env NOTIFY_INCLUDE_OLD_IMAGE="y" \
     --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount type=bind,source=/root/.docker/config.json,target=/root/.docker/config.json,ro \
     ixdotai/cioban
 ```
 
-#### Logs:
-With `LOGLEVEL=DEBUG`
-```
-2020-02-04 07:17:01.446 INFO [__main__.<module>] FILTER_SERVICES: "{'label': 'ai.ix.auto-update=true'}"
-2020-02-04 07:17:01.446 INFO [__main__.<module>] BLACKLIST_SERVICES: "['websites_tool-ix-ai']"
-2020-02-04 07:17:01.446 INFO [__main__.<module>] TELEGRAM_TOKEN is set
-2020-02-04 07:17:01.446 INFO [__main__.<module>] TELEGRAM_CHAT_ID is set
-2020-02-04 07:17:01.446 INFO [__main__.<module>] NOTIFY_INCLUDE_NEW_IMAGE is set
-2020-02-04 07:17:01.446 INFO [__main__.<module>] NOTIFY_INCLUDE_OLD_IMAGE is set
-2020-02-04 07:17:01.446 INFO [__main__.<module>] SLEEP_TIME: 10s
-2020-02-04 07:17:01.446 INFO [__main__.<module>] PORT: 9308
-2020-02-04 07:17:01.447 WARNING [__main__.<module>] Starting cioban None-None with prometheus metrics on port 9308
-2020-02-04 07:17:01.447 DEBUG [core.register] Registering telegram
-2020-02-04 07:17:01.634 DEBUG [telegram_notifier.__init__] Initialized
-2020-02-04 07:17:01.634 DEBUG [core.register] Registered telegram
-2020-02-04 07:17:01.634 DEBUG [cioban.__init__] Registered telegram
-2020-02-04 07:17:01.634 DEBUG [cioban.__init__] Cioban initialized
-2020-02-04 07:17:01.646 INFO [cioban.run] Starting update run
-2020-02-04 07:17:01.669 DEBUG [cioban.get_services] Blacklisted websites_tool-ix-ai
-2020-02-04 07:17:03.996 DEBUG [cioban.__get_updated_image] containous/whoami:latest@sha256:c0d68a0f9acde95c5214bd057fd3ff1c871b2ef12dae2a9e2d2a3240fdd9214b: No update available
-2020-02-04 07:17:03.997 INFO [cioban.run] Sleeping for 10 seconds
-2020-02-04 07:17:13.997 INFO [cioban.run] Starting update run
-2020-02-04 07:17:14.014 DEBUG [cioban.get_services] Blacklisted websites_tool-ix-ai
-2020-02-04 07:17:16.427 INFO [cioban.__update_image] Updating service websites_whoami with image containous/whoami:latest@sha256:c0d68a0f9acde95c5214bd057fd3ff1c871b2ef12dae2a9e2d2a3240fdd9214b
-2020-02-04 07:17:16.532 WARNING [cioban.__update_image] Service websites_whoami has been updated
-2020-02-04 07:17:16.543 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:17.558 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:18.568 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:19.578 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:20.586 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:21.599 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:22.607 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:23.620 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:24.630 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:25.640 DEBUG [cioban._run] Service websites_whoami is in status `updating`. Waiting 1s...
-2020-02-04 07:17:26.649 DEBUG [cioban._run] Service websites_whoami has converged.
-2020-02-04 07:17:26.649 DEBUG [core.notify] Sending notification
-2020-02-04 07:17:26.649 DEBUG [telegram_notifier.notify] Sending notification to telegram
-2020-02-04 07:17:26.840 INFO [telegram_notifier.__post_message] Sent message to telegram.
-2020-02-04 07:17:26.840 DEBUG [telegram_notifier.__post_message] Message: ☑ <b>CIOBAN: Service Updated</b> ☑
-<b>Service Name</b>: websites_whoami
-<b>Service Short Id</b>: z76ynth8m3
-<b>Old Image</b>: containous/whoami:latest
-<b>New Image</b>: containous/whoami:latest@sha256:c0d68a0f9acde95c5214bd057fd3ff1c871b2ef12dae2a9e2d2a3240fdd9214b
-
-2020-02-04 07:17:26.841 INFO [cioban.run] Sleeping for 10 seconds
-```
 ### Prometheus metrics
 
 In addition to the metrics exporter by [prometheus/client_python/](https://github.com/prometheus/client_python/), the following metrics are exposed by cioban:

@@ -73,6 +73,10 @@ class Cioban():
                         notifier_options.update({k.lower(): v})
                 self.notifiers.register(notifier, **notifier_options)
 
+    def get_port(self) -> int:
+        """ returns the configured prometheus port from self.settings['prometheus_port'] """
+        return self.settings['prometheus_port']
+
     def run(self):
         """ prepares the run and then triggers it. this is the actual loop """
         start_http_server(self.settings['prometheus_port'])  # starts the prometheus metrics server

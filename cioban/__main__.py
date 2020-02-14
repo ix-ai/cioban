@@ -18,9 +18,10 @@ if options.get('telegram_token') and options.get('telegram_chat_id'):
 if options.get('gotify_url') and options.get('gotify_token'):
     options['notifiers'].append('gotify')
 
-startup_message = (f"Starting **{__package__} {version}**")
-log.warning(startup_message)
-
 c = cioban.Cioban(**options)
+
+startup_message = (f"Starting **{__package__} {version}**. Exposing metrics on port {c.get_port()}")
+log.warning(startup_message)
 c.notify(title="Startup", message=startup_message)
+
 c.run()

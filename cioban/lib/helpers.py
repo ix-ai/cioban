@@ -38,7 +38,11 @@ def gather_environ(keys=None) -> dict:
             if key_type == 'list':
                 environs[key] = environs[key].split(' ')
             if key_type == 'boolean':
-                environs[key] = strtobool(environs[key])
+                try:
+                    environs[key] = strtobool(environs[key])
+                except ValueError:
+                    log.warning(f"{environs[key]} not understood for {key.upper()}. Setting to False.")
+                    environs[key] = False
             if key_type == 'filter':
                 filters = environs[key].split('=', 1)
                 environs[key] = {filters[0]: filters[1]}

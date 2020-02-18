@@ -20,6 +20,7 @@ class Notifier():
 
     def __post_message(self, title, message):
         """ sends the notification to telegram """
+        resp = None
         try:
             resp = requests.post(self.url, json={
                 'title': title,
@@ -30,12 +31,13 @@ class Notifier():
             # Print exception if reqeuest fails
             log.error(f'Could not connect to Gotify server. The error: {e}')
 
-        # Print request result if server returns http error code
-        if resp.status_code is not requests.codes.ok:  # pylint: disable=no-member
-            log.error(f'{bytes.decode(resp.content)}')
-        else:
-            log.info("Sent message to gotify")
-            log.debug(f"Message: {message}")
+        if resp:
+            # Print request result if server returns http error code
+            if resp.status_code is not requests.codes.ok:  # pylint: disable=no-member
+                log.error(f'{bytes.decode(resp.content)}')
+            else:
+                log.info("Sent message to gotify")
+                log.debug(f"Message: {message}")
 
     def notify(self, title="", **kwargs):
         """ parses the arguments, formats the message and dispatches it """

@@ -9,7 +9,7 @@ import docker
 from prometheus_client import start_http_server
 from .lib import constants
 from .lib import prometheus
-from .notifiers import core
+from .lib import notifiers
 
 log = logging.getLogger('cioban')
 
@@ -27,7 +27,7 @@ class Cioban():
         'notify_include_old_image': False,
     }
     docker = docker.from_env()
-    notifiers = core.start()
+    notifiers = notifiers.start()
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():

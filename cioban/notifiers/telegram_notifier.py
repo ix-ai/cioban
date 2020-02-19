@@ -10,16 +10,22 @@ from . import core
 log = logging.getLogger('cioban')
 
 
-class Notifier():
-    """ The notify class """
+def start(**kwargs):
+    """ Returns an instance of the TelegramNotifier """
+    return TelegramNotifier(**kwargs)
+
+
+class TelegramNotifier(core.Notifier):
+    """ The TelegramNotifier class """
 
     def __init__(self, **kwargs):
         self.chat_id = kwargs['telegram_chat_id']
         self.notifier = telegram.Bot(token=kwargs['telegram_token'])
         log.debug('Initialized')
+        super().__init__()
 
-    def __post_message(self, message):
-        """ sends the notification to telegram """
+    def post_message(self, message):
+        """ sends a notification to telegram """
         message = self.replace_characters(message)
         retry = True
         while retry is True:
@@ -43,7 +49,6 @@ class Notifier():
             except (telegram.error.Unauthorized) as error:
                 exit_message = f'{error} - check TELEGRAM_TOKEN - skipping retries.'
                 log.error(exit_message)
-                # Fake message_sent and return
                 retry = False
             except (telegram.error.BadRequest) as error:
                 exit_message = str(error)
@@ -65,20 +70,4 @@ class Notifier():
         else:
             for k, v in kwargs.items():
                 message += f"**{core.key_to_title(k)}**: `{v}`  \n"
-        self.__post_message(message)
-
-    def replace_characters(self, message=""):
-        """
-        replaces standard markdown characters with telegram flavour
-
-        replaces `**` with `*`
-        replaces `__` with `*`
-        """
-        strong_characters = [
-            '**',
-            '__'
-        ]
-        for character in strong_characters:
-            message = message.replace(character, '*')
-
-        return message
+        self.post_message(message)

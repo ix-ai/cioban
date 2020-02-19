@@ -10,16 +10,22 @@ from . import core
 log = logging.getLogger('cioban')
 
 
-class Notifier():
-    """ The notify class """
+def start(**kwargs):
+    """ Returns an instance of the GotifyNotifier """
+    return GotifyNotifier(**kwargs)
+
+
+class GotifyNotifier(core.Notifier):
+    """ The GotifyNotifier class """
 
     def __init__(self, **kwargs):
         self.token = kwargs['gotify_token']
         self.url = urljoin(kwargs['gotify_url'], f'/message?token={self.token}')
         log.debug(f"Initialized with {kwargs['gotify_url']}")
+        super().__init__()
 
-    def __post_message(self, title, message):
-        """ sends the notification to telegram """
+    def post_message(self, title, message):
+        """ sends a notification to gotify """
         resp = None
         try:
             resp = requests.post(self.url, json={
@@ -48,7 +54,4 @@ class Notifier():
         else:
             for k, v in kwargs.items():
                 message += f'**{core.key_to_title(k)}**: `{v}`  \n'
-        self.__post_message(title, message)
-
-    def noop(self):
-        """ Does nothing """
+        self.post_message(title, message)

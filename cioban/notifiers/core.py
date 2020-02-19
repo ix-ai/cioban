@@ -38,7 +38,7 @@ class CoreNotifiers():
         for n in self.notifiers:
             if n == notifier:
                 instance = importlib.import_module(f'cioban.notifiers.{notifier}_notifier')
-                self.registered.append({notifier: instance.Notifier(**kwargs)})
+                self.registered.append({notifier: instance.start(**kwargs)})
                 log.debug(f'Registered {notifier}')
 
     def notify(self, title='Service Updated', **kwargs):
@@ -47,3 +47,26 @@ class CoreNotifiers():
             for notifier in i:
                 log.debug(f'Sending notification to {notifier}')
                 i[notifier].notify(title=f'CIOBAN: {title}', **kwargs)
+
+
+class Notifier():  # pylint: disable=too-few-public-methods
+    """ The base class for all notifiers """
+
+    def replace_characters(self, message: str) -> str:
+        """
+        replaces standard markdown characters with telegram flavour
+
+        replaces `**` with `*`
+        replaces `__` with `*`
+
+        """
+
+        strong_characters = [
+            '**',
+            '__'
+        ]
+        if message:
+            for character in strong_characters:
+                message = message.replace(character, '*')
+
+        return message

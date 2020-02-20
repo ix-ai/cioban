@@ -4,6 +4,7 @@
 [![Docker Stars](https://img.shields.io/docker/stars/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Gitlab Project](https://img.shields.io/badge/GitLab-Project-554488.svg)](https://gitlab.com/ix.ai/cioban/)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fix-ai%2Fcioban.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fix-ai%2Fcioban?ref=badge_shield)
 
 
 A docker swarm service for automatically updating your services to the latest image tag push. You can enable telegram or gotify notifications, so you get a message after every successful update.
@@ -132,3 +133,7 @@ Cioban is a fork of [shepherd](https://github.com/djmaze/shepherd). It has been 
 
 ### What is `cioban`?
 Cioban is the Romanian translation of the word `shepherd`.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fix-ai%2Fcioban.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fix-ai%2Fcioban?ref=badge_large)

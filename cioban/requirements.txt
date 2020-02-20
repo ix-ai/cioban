@@ -2,4 +2,4 @@ prometheus_client==0.7.1
 docker==4.2.0
 pause==0.2
 pygelf==0.3.6
-python-telegram-bot==12.4.2
+ix_notifiers>=0.0.119403930

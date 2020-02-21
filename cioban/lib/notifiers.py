@@ -33,6 +33,8 @@ class Notify(IxNotifiers):
             message = kwargs['message']
         else:
             for k, v in kwargs.items():
+                if k == 'title':
+                    break
                 message += f'**{notifier.key_to_title(k)}**: `{v}`  \n'
         notifier.send(title=kwargs.get('title', ''), message=message)
 

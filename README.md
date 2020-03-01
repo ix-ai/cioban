@@ -68,8 +68,27 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | `GELF_PORT`                 | `12201`     | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging |
 | `PORT`                      | `9308`      | The port for prometheus metrics |
 
+## Webhooks
 
-### Example:
+Starting with version `0.12.0`, `ixdotai/cioban` supports simple webhooks for each service, that are configured in the service labels.
+
+The following labels are supported:
+
+| **Label** | **Default** | **Description** |
+|:----------|:-----------:|:----------------|
+| `cioban.webhook.http.url` | - | The full URL of the webhook |
+| `cioban.webhook.http.method` | `post` | The HTTP method to use (one of `get`, `post`) |
+| `cioban.webhook.auth.basic.username` | - | The username, if using basic authentication |
+| `cioban.webhook.auth.basic.password` | - | The password, if using basic authentication |
+| `cioban.webhook.auth.token.header` | `Authorization` | The name of the header that will be used for the token |
+| `cioban.webhook.auth.token.type` | `token` | The type of authorization token (usually `token` or `access_token`) |
+| `cioban.webhook.auth.token.token` | - | The actual token |
+
+**Note** `cioban.webhook.auth.basic` uses the header `Authorization` and it's incompatible with the default `cioban.webhook.auth.token.header`.
+
+## Examples
+
+### Start `ixdotai/cioban`as a Docker Swarm service
 ```sh
 docker service create \
     --name cioban \
@@ -77,7 +96,7 @@ docker service create \
     --constraint "node.role==manager" \
     --env SLEEP_TIME="3m" \
     --env BLACKLIST_SERVICES="cioban karma_karma karma_oauth" \
-    --env FILTER_SERVICES="label=com.mydomain.autodeploy=true" \
+    --env FILTER_SERVICES="label=ai.ix.auto-update=true" \
     --env LOGLEVEL="WARNING" \
     --env TELEGRAM_TOKEN="000000000:zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" \
     --env TELEGRAM_CHAT_ID="-0000000000000" \
@@ -86,6 +105,51 @@ docker service create \
     --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount type=bind,source=/root/.docker/config.json,target=/root/.docker/config.json,ro \
     ixdotai/cioban
+```
+
+### Add a webhook for a service
+
+```yml
+version: "3.7"
+
+services:
+  spielwiese:
+    image: ixdotai/spielwiese
+    networks:
+      - websites
+    deploy:
+      labels:
+        - "ai.ix.auto-update"
+        - "cioban.webhook.http.url=http://localhost:8080/json"
+        - "cioban.webhook.http.timeout=5"
+        - "cioban.webhook.auth.basic.username=foo"
+        - "cioban.webhook.auth.basic.password=${WEBHOOK_BASIC_PASS}"
+        - "cioban.webhook.auth.token.token=${WEBHOOK_TOKEN}"
+        - "cioban.webhook.auth.token.header=SECRET-TOKEN"
+  cioban:
+    image: ixdotai/cioban:latest
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        ai.ix.auto-update: 'true' # cioban updates cioban
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:rw'
+      - '/root/.docker/config.json:/root/.docker/config.json:ro'
+    environment:
+      GELF_HOST: graylog
+      SLEEP_TIME: '5m'
+      BLACKLIST_SERVICES: 'gitlab_register-git-ix-ai-runner gitlab_register-gitlab-com-ix-ai-runner'
+      FILTER_SERVICES: 'label=ai.ix.auto-update'
+      NOTIFY_INCLUDE_IMAGE: 'yes'
+      GOTIFY_URL: "${GOTIFY_URL?err}"
+      GOTIFY_TOKEN: "${GOTIFY_TOKEN?err}"
+      TELEGRAM_TOKEN: "${TELEGRAM_TOKEN?err}"
+      TELEGRAM_CHAT_ID: "${TELEGRAM_CHAT_ID?err}"
+      LOGLEVEL: INFO
+networks:
+  websites: {}
 ```
 
 ### Prometheus metrics
@@ -124,7 +188,6 @@ Docker handles all the work of [applying rolling updates](https://docs.docker.co
 Starting with version 0.8.1, the images are multi-arch, with builds for amd64, arm64, armv7 and armv6.
 * `vN.N.N` - for example 0.8.0
 * `latest` - always pointing to the latest version
-* `dev-branch` - the last build on a feature/development branch
 * `dev-master` - the last build on the master branch
 
 ## Resources

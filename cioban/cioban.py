@@ -10,6 +10,7 @@ from prometheus_client import start_http_server
 from .lib import constants
 from .lib import prometheus
 from .lib import notifiers
+from .lib.webhooks import Webhooks
 
 log = logging.getLogger('cioban')
 
@@ -141,6 +142,7 @@ class Cioban():
         services = self.get_services()
 
         for service in services:
+            webhook = Webhooks(service)
             try:
                 service_name = service.name
                 image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
@@ -152,6 +154,7 @@ class Cioban():
                     service_updated = self.__update_image(service, update_image)
 
                 if service_updated:
+                    webhook.trigger()
                     updating = True
                     while updating:
                         service.reload()

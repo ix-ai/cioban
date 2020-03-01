@@ -120,7 +120,7 @@ services:
     deploy:
       labels:
         - "ai.ix.auto-update"
-        - "cioban.webhook.http.url=http://localhost:8080/json"
+        - "cioban.webhook.http.url=http://spielwiese:8080/json"
         - "cioban.webhook.http.timeout=5"
         - "cioban.webhook.auth.basic.username=foo"
         - "cioban.webhook.auth.basic.password=${WEBHOOK_BASIC_PASS}"
@@ -134,6 +134,11 @@ services:
           - node.role == manager
       labels:
         ai.ix.auto-update: 'true' # cioban updates cioban
+        cioban.webhook.http.url: http://spielwiese:8080/json
+        cioban.webhook.auth.basic.username: foo
+        cioban.webhook.auth.basic.password: ${WEBHOOK_BASIC_PASS}
+        cioban.webhook.auth.token.token: ${WEBHOOK_TOKEN}
+        cioban.webhook.auth.token.header: SECRET-TOKEN
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:rw'
       - '/root/.docker/config.json:/root/.docker/config.json:ro'

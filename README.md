@@ -3,6 +3,8 @@
 [![Pipeline Status](https://gitlab.com/ix.ai/cioban/badges/master/pipeline.svg)](https://gitlab.com/ix.ai/cioban/)
 [![Docker Stars](https://img.shields.io/docker/stars/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
+[![Image Layers](https://images.microbadger.com/badges/image/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
+[![Latest Version](https://images.microbadger.com/badges/version/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Gitlab Project](https://img.shields.io/badge/GitLab-Project-554488.svg)](https://gitlab.com/ix.ai/cioban/)
 
 
@@ -125,7 +127,6 @@ Starting with version 0.8.1, the images are multi-arch, with builds for amd64, a
 * GitLab: https://gitlab.com/ix.ai/cioban
 * GitHub: https://github.com/ix-ai/cioban
 * Docker Hub: https://hub.docker.com/r/ixdotai/cioban
-* ix.ai CI templates: https://gitlab.com/ix.ai/ci-templates
 
 ## Credits
 Cioban is a fork of [shepherd](https://github.com/djmaze/shepherd). It has been completely rewritten in python.

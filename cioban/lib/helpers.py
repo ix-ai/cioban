@@ -48,3 +48,8 @@ def gather_environ(keys=None) -> dict:
                 environs[key] = {filters[0]: filters[1]}
             log.info(f'{key.upper()} is set')
     return environs
+
+
+def short_msg(msg: str, chars=150) -> str:
+    """ Truncates the message to {chars} characters and adds three dots at the end """
+    return (str(msg)[:chars] + '..') if len(str(msg)) > chars else str(msg)

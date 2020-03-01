@@ -39,6 +39,10 @@ services:
         - node.role == manager
 ```
 
+## Contributing
+
+Please read [how to contribute](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md).
+
 ## Configuration
 
 You can enable private registry authentication by mounting your credentials file to `/root/.docker/config.json`.

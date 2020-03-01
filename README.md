@@ -10,35 +10,6 @@
 
 A docker swarm service for automatically updating your services to the latest image tag push. You can enable telegram or gotify notifications, so you get a message after every successful update.
 
-## Usage Examples
-
-### CLI
-```sh
-docker service create \
-    --name cioban \
-    --constraint "node.role==manager" \
-    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
-    ixdotai/cioban
-```
-
-### docker-compose
-```yml
-version: "3.7"
-
-services:
-  cioban:
-    image: ixdotai/cioban
-    volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock:rw'
-      - '/root/.docker/config.json:/root/.docker/config.json:ro'
-    environment:
-      SLEEP_TIME: 30s
-    deploy:
-      placement:
-        constraints:
-        - node.role == manager
-```
-
 ## Contributing
 
 Please read [how to contribute](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md).

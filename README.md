@@ -18,7 +18,7 @@ Please read [how to contribute](CONTRIBUTING.md) and the [code of conduct](CODE_
 
 You can enable private registry authentication by mounting your credentials file to `/root/.docker/config.json`.
 
-Cioban will try to update your services every 5 minutes by default. The following environment settings are recognized:
+Cioban will try to update your services every 5 minutes by default. The following environment settings are recognised:
 
 ### Environment
 
@@ -39,23 +39,32 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | `GELF_PORT`                 | `12201`     | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging |
 | `PORT`                      | `9308`      | The port for prometheus metrics |
 
+Additionally, these environment variables are [supported](https://docker-py.readthedocs.io/en/stable/client.html#docker.client.from_env) by the [Python library for the Docker Engine API](https://github.com/docker/docker-py):
+
+| **Variable**         | **Description**                                                                                         |
+|:--------------------:|:--------------------------------------------------------------------------------------------------------|
+| `DOCKER_HOST`        | The URL to the Docker host. |
+| `BLACKLIST_SERVICES` | Verify the host against a CA certificate. |
+| `FILTER_SERVICES`    | A path to a directory containing TLS certificates to use when connecting to the Docker host. (**Note**: this path needs to be present inside the `ixdotai/cioban` image) |
+
+
 ## Webhooks
 
 Starting with version `0.12.0`, `ixdotai/cioban` supports simple webhooks for each service, that are configured in the service labels.
 
 The following labels are supported:
 
-| **Label** | **Default** | **Description** |
-|:----------|:-----------:|:----------------|
-| `cioban.webhook.http.url` | - | The full URL of the webhook |
-| `cioban.webhook.http.method` | `post` | The HTTP method to use (one of `get`, `post`) |
-| `cioban.webhook.auth.basic.username` | - | The username, if using basic authentication |
-| `cioban.webhook.auth.basic.password` | - | The password, if using basic authentication |
-| `cioban.webhook.auth.token.header` | `Authorization` | The name of the header that will be used for the token |
-| `cioban.webhook.auth.token.type` | `token` | The type of authorization token (usually `token` or `access_token`) |
-| `cioban.webhook.auth.token.token` | - | The actual token |
+| **Label**                            | **Default**     | **Description** |
+|:-------------------------------------|:---------------:|:----------------|
+| `cioban.webhook.http.url`            | -               | The full URL of the webhook |
+| `cioban.webhook.http.method`         | `post`          | The HTTP method to use (one of `get`, `post`) |
+| `cioban.webhook.auth.basic.username` | -               | The username, if using basic authentication |
+| `cioban.webhook.auth.basic.password` | -               | The password, if using basic authentication |
+| `cioban.webhook.auth.token.header`   | `Authorization` | The name of the header that will be used for the token |
+| `cioban.webhook.auth.token.type`     | `token`         | The type of authorisation token (usually `token` or `access_token`) |
+| `cioban.webhook.auth.token.token`    | -               | The actual token |
 
-**Note** `cioban.webhook.auth.basic` uses the header `Authorization` and it's incompatible with the default `cioban.webhook.auth.token.header`.
+**Note**: `cioban.webhook.auth.basic` uses the header `Authorization` and it's incompatible with the default `cioban.webhook.auth.token.header`.
 
 ## Examples
 

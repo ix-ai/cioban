@@ -181,8 +181,8 @@ class Cioban():
                         notify['new_image'] = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
                     self.notify(**notify)
             except docker.errors.NotFound as error:
-                log.error(f'Exception caught: {error}')
-                log.warning('Service {service_name} disappeared. Reloading the service list.')
+                log.debug(f'Exception caught: {error}')
+                log.warning(f'Service {service_name} disappeared. Reloading the service list.')
                 services = self.get_services()
 
     def get_services(self):

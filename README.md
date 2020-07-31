@@ -45,8 +45,8 @@ Additionally, these environment variables are [supported](https://docker-py.read
 | **Variable**         | **Description**                                                                                         |
 |:--------------------:|:--------------------------------------------------------------------------------------------------------|
 | `DOCKER_HOST`        | The URL to the Docker host. |
-| `BLACKLIST_SERVICES` | Verify the host against a CA certificate. |
-| `FILTER_SERVICES`    | A path to a directory containing TLS certificates to use when connecting to the Docker host. (**Note**: this path needs to be present inside the `ixdotai/cioban` image) |
+| `DOCKER_TLS_VERIFY`  | Verify the host against a CA certificate. |
+| `DOCKER_CERT_PATH`   | A path to a directory containing TLS certificates to use when connecting to the Docker host. (**Note**: this path needs to be present inside the `ixdotai/cioban` image) |
 
 
 ## Webhooks

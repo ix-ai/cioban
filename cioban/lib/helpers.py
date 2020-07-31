@@ -23,6 +23,7 @@ def gather_environ(keys=None) -> dict:
             'telegram_chat_id': 'string',
             'gotify_url': 'string',
             'gotify_token': 'string',
+            'gotify_default_priority': 'int',
             'notify_include_image': 'boolean',
             'notify_include_new_image': 'boolean',
             'notify_include_old_image': 'boolean',
@@ -34,14 +35,18 @@ def gather_environ(keys=None) -> dict:
         if os.environ.get(key.upper()):
             environs.update({key: os.environ[key.upper()]})
             if key_type == 'int':
-                environs[key] = int(environs[key])
+                try:
+                    environs[key] = int(environs[key])
+                except ValueError:
+                    log.warning(f"`{environs[key]}` not understood for {key.upper()}. Ignoring.")
+                    del environs[key]
             if key_type == 'list':
                 environs[key] = environs[key].split(' ')
             if key_type == 'boolean':
                 try:
                     environs[key] = strtobool(environs[key])
                 except ValueError:
-                    log.warning(f"{environs[key]} not understood for {key.upper()}. Setting to False.")
+                    log.warning(f"`{environs[key]}` not understood for {key.upper()}. Setting to False.")
                     environs[key] = False
             if key_type == 'filter':
                 filters = environs[key].split('=', 1)

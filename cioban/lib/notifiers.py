@@ -29,14 +29,18 @@ class Notify(IxNotifiers):
         """ parses the arguments, formats the message and dispatches it """
         log.debug('Sending message to gotify')
         message = ""
-        if kwargs.get('message'):
+        try:
             message = kwargs['message']
-        else:
+        except KeyError:
             for k, v in kwargs.items():
                 if k == 'title':
                     break
                 message += f'**{notifier.key_to_title(k)}**: `{v}`  \n'
-        notifier.send(title=kwargs.get('title', ''), message=message)
+        params = {
+            'title': kwargs.get('title', ''),
+            'message': message,
+        }
+        notifier.send(**params)
 
     def telegram_notify(self, notifier, **kwargs):
         """ parses the arguments, formats the message and dispatches it """

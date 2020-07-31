@@ -31,6 +31,7 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | `TELEGRAM_CHAT_ID`          | -           | See this question on [stackoverflow](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id) |
 | `GOTIFY_URL`                | -           | The URL of the [Gotify](https://gotify.net/) server |
 | `GOTIFY_TOKEN`              | -           | The APP token for Gotify |
+| `GOTIFY_DEFAULT_PRIORITY`   | -           | If set, this is the priority of the Gotify message. See this comment in [gotify/android#18](https://github.com/gotify/android/issues/18#issuecomment-437403888). Must be integer. |
 | `NOTIFY_INCLUDE_IMAGE`      | -           | Set this variable to `yes` to include the image name (without digest) in the update notification |
 | `NOTIFY_INCLUDE_NEW_IMAGE`  | -           | Set this variable to `yes` to include the new image (**including** digest) in the update notification |
 | `NOTIFY_INCLUDE_OLD_IMAGE`  | -           | Set this variable to `yes` to include the old image (**including** digest) in the update notification |
@@ -44,8 +45,8 @@ Additionally, these environment variables are [supported](https://docker-py.read
 | **Variable**         | **Description**                                                                                         |
 |:--------------------:|:--------------------------------------------------------------------------------------------------------|
 | `DOCKER_HOST`        | The URL to the Docker host. |
-| `BLACKLIST_SERVICES` | Verify the host against a CA certificate. |
-| `FILTER_SERVICES`    | A path to a directory containing TLS certificates to use when connecting to the Docker host. (**Note**: this path needs to be present inside the `ixdotai/cioban` image) |
+| `DOCKER_TLS_VERIFY`  | Verify the host against a CA certificate. |
+| `DOCKER_CERT_PATH`   | A path to a directory containing TLS certificates to use when connecting to the Docker host. (**Note**: this path needs to be present inside the `ixdotai/cioban` image) |
 
 
 ## Webhooks

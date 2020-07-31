@@ -31,6 +31,7 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | `TELEGRAM_CHAT_ID`          | -           | See this question on [stackoverflow](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id) |
 | `GOTIFY_URL`                | -           | The URL of the [Gotify](https://gotify.net/) server |
 | `GOTIFY_TOKEN`              | -           | The APP token for Gotify |
+| `GOTIFY_DEFAULT_PRIORITY`   | -           | If set, this is the priority of the Gotify message. See this comment in [gotify/android#18](https://github.com/gotify/android/issues/18#issuecomment-437403888). Must be integer. |
 | `NOTIFY_INCLUDE_IMAGE`      | -           | Set this variable to `yes` to include the image name (without digest) in the update notification |
 | `NOTIFY_INCLUDE_NEW_IMAGE`  | -           | Set this variable to `yes` to include the new image (**including** digest) in the update notification |
 | `NOTIFY_INCLUDE_OLD_IMAGE`  | -           | Set this variable to `yes` to include the old image (**including** digest) in the update notification |

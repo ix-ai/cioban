@@ -3,8 +3,8 @@
 [![Pipeline Status](https://gitlab.com/ix.ai/cioban/badges/master/pipeline.svg)](https://gitlab.com/ix.ai/cioban/)
 [![Docker Stars](https://img.shields.io/docker/stars/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
-[![Image Layers](https://images.microbadger.com/badges/image/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
-[![Latest Version](https://images.microbadger.com/badges/version/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
+[![Docker Image Version (latest)](https://img.shields.io/docker/v/ixdotai/cioban/latest)](https://hub.docker.com/r/ixdotai/cioban/)
+[![Docker Image Size (latest)](https://img.shields.io/docker/image-size/ixdotai/cioban/latest)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Gitlab Project](https://img.shields.io/badge/GitLab-Project-554488.svg)](https://gitlab.com/ix.ai/cioban/)
 
 

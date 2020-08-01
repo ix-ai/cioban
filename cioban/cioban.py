@@ -139,7 +139,11 @@ class Cioban():
     @prometheus.PROM_UPDATE_SUMMARY.time()
     def _run(self):
         """ the actual run """
-        services = self.get_services()
+        services = []
+        try:
+            services = self.get_services()
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
+            log.error('Cannot connect to docker')
 
         for service in services:
             webhook = Webhooks(service)

@@ -40,6 +40,7 @@ def gather_environ(keys=None) -> dict:
                 except ValueError:
                     log.warning(f"`{environs[key]}` not understood for {key.upper()}. Ignoring.")
                     del environs[key]
+                    continue
             if key_type == 'list':
                 environs[key] = environs[key].split(' ')
             if key_type == 'boolean':
@@ -48,6 +49,7 @@ def gather_environ(keys=None) -> dict:
                 except ValueError:
                     log.warning(f"`{environs[key]}` not understood for {key.upper()}. Setting to False.")
                     environs[key] = False
+                    continue
             if key_type == 'filter':
                 filters = environs[key].split('=', 1)
                 environs[key] = {filters[0]: filters[1]}

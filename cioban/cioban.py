@@ -48,7 +48,7 @@ class Cioban():
             try:
                 self.sleep = int(self.settings['sleep_time'][:-1])
             except ValueError:
-                raise ValueError(f"{self.settings['sleep_time']} not understood")
+                raise ValueError(f"{self.settings['sleep_time']} not understood") from ValueError
 
             if self.settings['sleep_time'][-1] in relation:
                 self.sleep_type = relation[self.settings['sleep_time'][-1]]

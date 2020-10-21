@@ -45,7 +45,7 @@ def gather_environ(keys=None) -> dict:
                 environs[key] = environs[key].split(' ')
             if key_type == 'boolean':
                 try:
-                    environs[key] = strtobool(environs[key])
+                    environs[key] = bool(strtobool(environs[key]))
                 except ValueError:
                     log.warning(f"`{environs[key]}` not understood for {key.upper()}. Setting to False.")
                     environs[key] = False

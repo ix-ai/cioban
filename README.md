@@ -46,12 +46,12 @@ Additionally, these environment variables are [supported](https://docker-py.read
 |:--------------------:|:--------------------------------------------------------------------------------------------------------|
 | `DOCKER_HOST`        | The URL to the Docker host. |
 | `DOCKER_TLS_VERIFY`  | Verify the host against a CA certificate. |
-| `DOCKER_CERT_PATH`   | A path to a directory containing TLS certificates to use when connecting to the Docker host. (**Note**: this path needs to be present inside the `ixdotai/cioban` image) |
+| `DOCKER_CERT_PATH`   | A path to a directory containing TLS certificates to use when connecting to the Docker host. (**Note**: this path needs to be present inside the `registry.gitlab.com/ix.ai/cioban` image) |
 
 
 ## Webhooks
 
-Starting with version `0.12.0`, `ixdotai/cioban` supports simple webhooks for each service, that are configured in the service labels.
+Starting with version `0.12.0`, `registry.gitlab.com/ix.ai/cioban` supports simple webhooks for each service, that are configured in the service labels.
 
 The following labels are supported:
 
@@ -69,7 +69,7 @@ The following labels are supported:
 
 ## Examples
 
-### Start `ixdotai/cioban`as a Docker Swarm service
+### Start `registry.gitlab.com/ix.ai/cioban`as a Docker Swarm service
 ```sh
 docker service create \
     --name cioban \
@@ -85,7 +85,7 @@ docker service create \
     --env NOTIFY_INCLUDE_OLD_IMAGE="y" \
     --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --mount type=bind,source=/root/.docker/config.json,target=/root/.docker/config.json,ro \
-    ixdotai/cioban
+    registry.gitlab.com/ix.ai/cioban
 ```
 
 ### Add a webhook for a service
@@ -95,7 +95,7 @@ version: "3.7"
 
 services:
   spielwiese:
-    image: ixdotai/spielwiese
+    image: registry.gitlab.com/ix.ai/spielwiese
     networks:
       - websites
     deploy:
@@ -108,7 +108,7 @@ services:
         - "cioban.webhook.auth.token.token=${WEBHOOK_TOKEN}"
         - "cioban.webhook.auth.token.header=SECRET-TOKEN"
   cioban:
-    image: ixdotai/cioban:latest
+    image: registry.gitlab.com/ix.ai/cioban:latest
     deploy:
       placement:
         constraints:
@@ -179,6 +179,7 @@ Starting with version 0.8.1, the images are multi-arch, with builds for amd64, a
 ## Resources
 * GitLab: https://gitlab.com/ix.ai/cioban
 * GitHub: https://github.com/ix-ai/cioban
+* GitLab Registry: https://gitlab.com/ix.ai/cioban/container_registry
 * Docker Hub: https://hub.docker.com/r/ixdotai/cioban
 
 ## Credits

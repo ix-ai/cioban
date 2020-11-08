@@ -1,5 +1,5 @@
 prometheus_client==0.8.0
 docker==4.3.1
-pause==0.2
+pause==0.3
 pygelf==0.3.6
 ix-notifiers==0.0.205708273

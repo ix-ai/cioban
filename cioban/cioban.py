@@ -20,7 +20,7 @@ class Cioban():
     settings = {
         'filter_services': {},
         'blacklist_services': {},
-        'sleep_time': '5m',
+        'sleep_time': '6h',
         'prometheus_port': 9308,
         'notifiers': [],
         'notify_include_image': False,

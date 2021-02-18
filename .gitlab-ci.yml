@@ -11,6 +11,7 @@ include:
 - project: ix.ai/ci-templates
   file: "/python-project.yml"
 - template: Security/SAST.gitlab-ci.yml
+- template: Dependency-Scanning.gitlab-ci.yml
 
 sast:
   stage: test

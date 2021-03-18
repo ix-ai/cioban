@@ -179,8 +179,9 @@ Starting with version 0.8.1, the images are multi-arch, with builds for amd64, a
 ## Resources
 * GitLab: https://gitlab.com/ix.ai/cioban
 * GitHub: https://github.com/ix-ai/cioban
-* GitLab Registry: https://gitlab.com/ix.ai/cioban/container_registry
-* Docker Hub: https://hub.docker.com/r/ixdotai/cioban
+* GitLab Registry: `registry.gitlab.com/ix.ai/cioban` - https://gitlab.com/ix.ai/cioban/container_registry
+* GitHub Registry: `ghcr.io/ix-ai/cioban` - https://ghcr.io/ix-ai/cioban
+* Docker Hub: `ixdotai/cioban` - https://hub.docker.com/r/ixdotai/cioban
 
 ## Credits
 Cioban is a fork of [shepherd](https://github.com/djmaze/shepherd). It has been completely rewritten in python.

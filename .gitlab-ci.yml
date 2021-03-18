@@ -4,6 +4,7 @@
 # See https://docs.gitlab.com/ee/ci/variables/#priority-of-environment-variables
 variables:
   DOCKERHUB_REPO_NAME: cioban
+  GITHUB_REPO_NAME: ix-ai/cioban
   ENABLE_ARM64: 'true'
   ENABLE_ARMv7: 'true'
   ENABLE_ARMv6: 'true'

@@ -2,17 +2,17 @@
 # See https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#priority-of-environment-variables
+---
 variables:
   DOCKERHUB_REPO_NAME: cioban
   GITHUB_REPO_NAME: ix-ai/cioban
   ENABLE_ARM64: 'true'
   ENABLE_ARMv7: 'true'
-  ENABLE_ARMv6: 'true'
 include:
-- project: ix.ai/ci-templates
-  file: "/python-project.yml"
-- template: Security/SAST.gitlab-ci.yml
-- template: Dependency-Scanning.gitlab-ci.yml
+  - project: ix.ai/ci-templates
+    file: "/python-project.yml"
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
 
 sast:
   stage: test

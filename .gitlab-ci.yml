@@ -7,7 +7,6 @@ variables:
   DOCKERHUB_REPO_NAME: cioban
   GITHUB_REPO_NAME: ix-ai/cioban
   ENABLE_ARM64: 'true'
-  ENABLE_ARMv7: 'true'
 include:
   - project: ix.ai/ci-templates
     file: "/python-project.yml"

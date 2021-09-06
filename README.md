@@ -171,7 +171,8 @@ Docker handles all the work of [applying rolling updates](https://docs.docker.co
 
 ## Tags and Arch
 
-Starting with version 0.8.1, the images are multi-arch, with builds for amd64, arm64, armv7 and armv6.
+Starting with version 0.8.1, the images are multi-arch, with builds for amd64, arm64.
+Please note, `armv7` and `armv6` are no longer available starting with version 0.14.0, since the support for them was dropped in the upstream [docker:latest](https://hub.docker.com/_/docker) image.
 * `vN.N.N` - for example 0.8.0
 * `latest` - always pointing to the latest version
 * `dev-master` - the last build on the master branch

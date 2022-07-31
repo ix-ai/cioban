@@ -4,6 +4,7 @@
 
 import logging
 import os
+# pylint: disable=deprecated-module
 from distutils.util import strtobool
 
 log = logging.getLogger("cioban")

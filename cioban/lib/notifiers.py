@@ -22,6 +22,7 @@ class Notify(IxNotifiers):
         kwargs['title'] = f'CIOBAN: {title}'
         for notifier_name, notifier in self.registered.items():
             log.debug(f'Sending notification to {notifier_name}')
+            # pylint: disable=unnecessary-dunder-call
             notification_method = self.__getattribute__(f'{notifier_name}_notify')
             notification_method(notifier=notifier, **kwargs)
 

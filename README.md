@@ -70,6 +70,7 @@ The following labels are supported:
 ## Examples
 
 ### Start `registry.gitlab.com/ix.ai/cioban`as a Docker Swarm service
+
 ```sh
 docker service create \
     --name cioban \
@@ -141,6 +142,7 @@ networks:
 ### Prometheus metrics
 
 In addition to the metrics exporter by [prometheus/client_python/](https://github.com/prometheus/client_python/), the following metrics are exposed by cioban:
+
 ```
 # HELP update_run_seconds Time spent processing updates
 # TYPE update_run_seconds summary
@@ -178,6 +180,7 @@ Please note, `armv7` and `armv6` are no longer available starting with version 0
 * `dev-master` - the last build on the master branch
 
 ## Resources
+
 * GitLab: https://gitlab.com/ix.ai/cioban
 * GitHub: https://github.com/ix-ai/cioban
 * GitLab Registry: `registry.gitlab.com/ix.ai/cioban` - https://gitlab.com/ix.ai/cioban/container_registry

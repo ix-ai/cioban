@@ -1,4 +1,4 @@
-FROM docker:latest
+FROM alpine:latest
 LABEL maintainer="docker@ix.ai" \
       ai.ix.repository="ix.ai/cioban"
 

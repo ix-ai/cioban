@@ -3,10 +3,12 @@
 """ A docker swarm service for automatically updating your services to the latest image tag push. """
 
 import logging
+from datetime import datetime
 import requests
 import pause
 import docker
 from prometheus_client import start_http_server
+from cronsim import CronSim, CronSimError
 from .lib import constants
 from .lib import prometheus
 from .lib import notifiers
@@ -21,6 +23,7 @@ class Cioban():
         'filter_services': {},
         'blacklist_services': {},
         'sleep_time': '6h',
+        'schedule_time': False,
         'prometheus_port': 9308,
         'notifiers': [],
         'notify_include_image': False,
@@ -37,6 +40,15 @@ class Cioban():
             else:
                 log.debug(f'{k} not found in settings. Ignoring.')
         prometheus.PROM_INFO.info({'version': f'{constants.VERSION}-{constants.BUILD}'})
+
+        # Test schedule_time
+        if self.settings['schedule_time']:
+            log.debug('Disabling SLEEP_TIME because SCHEDULE_TIME is set.')
+            try:
+                CronSim(self.settings['schedule_time'], datetime.now())
+            except (CronSimError) as e:
+                raise CronSimError(f"{self.settings['schedule_time']} not understood. The error: {e}") from CronSimError
+
         relation = {
             's': 'seconds',
             'm': 'minutes',
@@ -44,19 +56,21 @@ class Cioban():
             'd': 'days',
             'w': 'weeks',
         }
-        if any(s.isalpha() for s in self.settings['sleep_time']):
+
+        try:
+            self.sleep = int(self.settings['sleep_time'])
+            self.sleep_type = 'minutes'
+        except ValueError as exc:
             try:
                 self.sleep = int(self.settings['sleep_time'][:-1])
-            except ValueError:
-                raise ValueError(f"{self.settings['sleep_time']} not understood") from ValueError
+            except ValueError as e:
+                raise ValueError(f"{self.settings['sleep_time']} not understood. The error: {e}") from e
 
             if self.settings['sleep_time'][-1] in relation:
                 self.sleep_type = relation[self.settings['sleep_time'][-1]]
             else:
-                raise ValueError(f"{self.settings['sleep_time']} not understood")
-        else:
-            self.sleep = int(self.settings['sleep_time'])
-            self.sleep_type = 'minutes'
+                raise ValueError(f"{self.settings['sleep_time']} not understood") from exc
+
         self.register_notifiers(**kwargs)
 
         log.debug('Cioban initialized')
@@ -83,13 +97,20 @@ class Cioban():
         start_http_server(self.settings['prometheus_port'])  # starts the prometheus metrics server
         log.info(f"Listening on port {self.settings['prometheus_port']}")
         while True:
-            prometheus.PROM_STATE_ENUM.state('running')
-            log.info('Starting update run')
-            self._run()
+            self.__set_timer()
             log.info(f'Sleeping for {self.sleep} {self.sleep_type}')
             prometheus.PROM_STATE_ENUM.state('sleeping')
             wait = getattr(pause, self.sleep_type)
             wait(self.sleep)
+            prometheus.PROM_STATE_ENUM.state('running')
+            log.info('Starting update run')
+            self._run()
+
+    def __set_timer(self):
+        self.sleep_type = 'seconds'
+        cron_timer = CronSim(self.settings['schedule_time'], datetime.now())
+        self.sleep = (next(cron_timer) - datetime.now()).seconds + 1
+        log.debug(f"Based on the cron schedule '{self.settings['schedule_time']}', next run is in {self.sleep}s")
 
     def __get_updated_image(self, image, image_sha):
         """ checks if an image has an update """

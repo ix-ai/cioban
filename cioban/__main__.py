@@ -20,7 +20,7 @@ if options.get('gotify_url') and options.get('gotify_token'):
 
 c = cioban.Cioban(**options)
 
-startup_message = (f"Starting **{__package__} {version}**. Exposing metrics on port {c.get_port()}")
+startup_message = f"Starting **{__package__} {version}**. Exposing metrics on port {c.get_port()}"
 log.warning(startup_message)
 c.notify(title="Startup", message=startup_message)
 

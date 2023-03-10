@@ -3,11 +3,11 @@
 """ A docker swarm service for automatically updating your services to the latest image tag push. """
 
 import logging
+from datetime import datetime
 import requests
 import pause
 import docker
 from prometheus_client import start_http_server
-from datetime import datetime
 from cronsim import CronSim, CronSimError
 from .lib import constants
 from .lib import prometheus
@@ -60,16 +60,16 @@ class Cioban():
         try:
             self.sleep = int(self.settings['sleep_time'])
             self.sleep_type = 'minutes'
-        except ValueError:
+        except ValueError as exc:
             try:
                 self.sleep = int(self.settings['sleep_time'][:-1])
             except ValueError as e:
-                raise ValueError(f"{self.settings['sleep_time']} not understood. The error: {e}") from ValueError
+                raise ValueError(f"{self.settings['sleep_time']} not understood. The error: {e}") from e
 
             if self.settings['sleep_time'][-1] in relation:
                 self.sleep_type = relation[self.settings['sleep_time'][-1]]
             else:
-                raise ValueError(f"{self.settings['sleep_time']} not understood")
+                raise ValueError(f"{self.settings['sleep_time']} not understood") from exc
 
         self.register_notifiers(**kwargs)
 
@@ -107,10 +107,10 @@ class Cioban():
             self._run()
 
     def __set_timer(self):
-                self.sleep_type = 'seconds'
-                self.schedule_time = CronSim(self.settings['schedule_time'], datetime.now())
-                self.sleep = (next(self.schedule_time) - datetime.now()).seconds + 1
-                log.debug(f"Based on the cron schedule '{self.settings['schedule_time']}', next run is in {self.sleep}s")
+        self.sleep_type = 'seconds'
+        cron_timer = CronSim(self.settings['schedule_time'], datetime.now())
+        self.sleep = (next(cron_timer) - datetime.now()).seconds + 1
+        log.debug(f"Based on the cron schedule '{self.settings['schedule_time']}', next run is in {self.sleep}s")
 
     def __get_updated_image(self, image, image_sha):
         """ checks if an image has an update """

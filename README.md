@@ -25,6 +25,7 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | **Variable**                | **Default** | **Description**                                                                                         |
 |:----------------------------|:-----------:|:--------------------------------------------------------------------------------------------------------|
 | `SLEEP_TIME`                | `6h`        | Adjust the sleeping time. Accepted are numbers ending in one of `s`, `m`, `h`, `d`, `w`|
+| `SCHEDULE_TIME`             | -           | Cron-Style string for scheduled runs. This will **disable** `SLEEP_TIME` |
 | `BLACKLIST_SERVICES`        | -           | Space-separated list of service names to exclude from updates |
 | `FILTER_SERVICES`           | -           | Anything accepted by the filtering flag in `docker service ls`. Example: `label=ai.ix.auto-update=true` |
 | `TELEGRAM_TOKEN`            | -           | See the [Telegram documentation](https://core.telegram.org/bots#creating-a-new-bot) how to get a new token |
@@ -48,6 +49,10 @@ Additionally, these environment variables are [supported](https://docker-py.read
 | `DOCKER_TLS_VERIFY`  | Verify the host against a CA certificate. |
 | `DOCKER_CERT_PATH`   | A path to a directory containing TLS certificates to use when connecting to the Docker host. (**Note**: this path needs to be present inside the `registry.gitlab.com/ix.ai/cioban` image) |
 
+
+## Cron-Style Scheduling
+
+`cioban` is using [cronsim](https://github.com/cuu508/cronsim) for parsing the `SCHEDULE_TIME`. For accepted values, please consult the [cronsim](https://github.com/cuu508/cronsim) documentation.
 
 ## Webhooks
 

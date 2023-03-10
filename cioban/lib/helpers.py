@@ -28,6 +28,7 @@ def gather_environ(keys=None) -> dict:
             'notify_include_image': 'boolean',
             'notify_include_new_image': 'boolean',
             'notify_include_old_image': 'boolean',
+            'schedule_time': 'string',
             'sleep_time': 'string',
             'prometheus_port': 'int',
         }

@@ -97,7 +97,8 @@ class Cioban():
         start_http_server(self.settings['prometheus_port'])  # starts the prometheus metrics server
         log.info(f"Listening on port {self.settings['prometheus_port']}")
         while True:
-            self.__set_timer()
+            if self.settings['schedule_time']:
+                self.__set_timer()
             log.info(f'Sleeping for {self.sleep} {self.sleep_type}')
             prometheus.PROM_STATE_ENUM.state('sleeping')
             wait = getattr(pause, self.sleep_type)

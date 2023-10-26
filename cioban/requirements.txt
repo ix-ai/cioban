@@ -1,7 +1,7 @@
-prometheus_client==0.16.0
-docker==6.0.1
+prometheus_client==0.17.1
+docker==6.1.3
 pause==0.3
 pygelf==0.4.2
 ix-notifiers==0.0.259196408
-cronsim==2.3
+cronsim==2.5
 

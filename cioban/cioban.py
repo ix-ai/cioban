@@ -3,7 +3,7 @@
 """ A docker swarm service for automatically updating your services to the latest image tag push. """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import pause
 import docker
@@ -111,7 +111,7 @@ class Cioban():
         self.sleep_type = 'seconds'
         cron_timer = CronSim(self.settings['schedule_time'], datetime.now())
         self.sleep = (next(cron_timer) - datetime.now()).seconds + 1
-        next_run = str(datetime.timedelta(seconds = self.sleep))
+        next_run = str(timedelta(seconds = self.sleep))
         log.debug(f"Based on the cron schedule '{self.settings['schedule_time']}', next run is in {next_run}")
 
     def __get_updated_image(self, image, image_sha):

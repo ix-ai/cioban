@@ -4,4 +4,6 @@ pause==0.3
 pygelf==0.4.2
 ix-notifiers==0.0.259196408
 cronsim==2.5
+python-dateutil==2.8.2
+setuptools
 

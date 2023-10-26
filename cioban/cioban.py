@@ -111,7 +111,8 @@ class Cioban():
         self.sleep_type = 'seconds'
         cron_timer = CronSim(self.settings['schedule_time'], datetime.now())
         self.sleep = (next(cron_timer) - datetime.now()).seconds + 1
-        log.debug(f"Based on the cron schedule '{self.settings['schedule_time']}', next run is in {self.sleep}s")
+        next_run = str(datetime.timedelta(seconds = self.sleep))
+        log.debug(f"Based on the cron schedule '{self.settings['schedule_time']}', next run is in {next_run}")
 
     def __get_updated_image(self, image, image_sha):
         """ checks if an image has an update """

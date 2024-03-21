@@ -157,9 +157,12 @@ update_run_seconds_sum 43.92592599400086
 update_run_seconds_created 1.5672812321329722e+09
 # HELP service_updated_total Shows if a service has been updated
 # TYPE service_updated_total counter
-service_updated_total{id="pqs6wtscm1tq6yiqrmu4wv0of",name="smtp_smtp",short_id="pqs6wtscm1"} 1.0
+service_updated_total{id="2pg5mnnwt7ged4klus6x88qm1",name="smtp_smtp"} 1.0
 # TYPE service_updated_created gauge
-service_updated_created{id="pqs6wtscm1tq6yiqrmu4wv0of",name="smtp_smtp",short_id="pqs6wtscm1"} 1.567281276077023e+09
+service_updated_created{id="2pg5mnnwt7ged4klus6x88qm1",name="smtp_smtp"} 1.567281276077023e+09
+# HELP service_info Information about a service
+# TYPE service_info gauge
+service_info{id="2pg5mnnwt7ged4klus6x88qm1",image_name="ghcr.io/ix-ai/smtp:latest",image_sha256="73629c8a2e0896d4591b6b3e884eb17bac14007a2352d9e977cf5706a5c33a9a",name="smtp_smtp",short_id="2pg5mnnwt7ge"} 1.0
 # HELP cioban_info Information about cioban
 # TYPE cioban_info gauge
 cioban_info{version="0.7.0"} 1.0

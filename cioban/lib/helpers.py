@@ -4,8 +4,6 @@
 
 import logging
 import os
-# pylint: disable=deprecated-module
-from distutils.util import strtobool
 
 log = logging.getLogger("cioban")
 
@@ -62,3 +60,16 @@ def gather_environ(keys=None) -> dict:
 def short_msg(msg: str, chars=150) -> str:
     """ Truncates the message to {chars} characters and adds three dots at the end """
     return (str(msg)[:chars] + '..') if len(str(msg)) > chars else str(msg)
+
+def strtobool(val):
+    """Convert a string representation of truth to true (1) or false (0).
+    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+    'val' is anything else.
+    """
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    if val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    raise ValueError(f"invalid truth value {(val,)}")

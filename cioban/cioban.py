@@ -97,6 +97,7 @@ class Cioban():
         start_http_server(self.settings['prometheus_port'])  # starts the prometheus metrics server
         log.info(f"Listening on port {self.settings['prometheus_port']}")
         while True:
+            self.get_services()
             if self.settings['schedule_time']:
                 self.__set_timer()
             log.info(f'Sleeping for {self.sleep} {self.sleep_type}')
@@ -174,7 +175,7 @@ class Cioban():
                 service_name = service.name
                 image_with_digest = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image']
                 image, image_sha = self.__get_image_parts(image_with_digest)
-                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id, service.short_id, image).inc(0)
+                prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id).inc(0)
                 update_image = self.__get_updated_image(image_sha=image_sha, image=image)
                 service_updated = False
                 if update_image:
@@ -198,7 +199,7 @@ class Cioban():
                             updating = False
 
                 if service_updated:
-                    prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id, service.short_id, image).inc(1)
+                    prometheus.PROM_SVC_UPDATE_COUNTER.labels(service_name, service.id).inc(1)
                     notify = {
                         'service_name': service_name,
                         'service_short_id': service.short_id,
@@ -217,6 +218,13 @@ class Cioban():
 
     def get_services(self):
         """ gets the list of services and filters out the black listed """
+
+        # first call to get the full list
+        # this will allow us to set a metric `service_info`
+        for service in self.docker.services.list():
+            image = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image'].split('@sha256:')
+            prometheus.PROM_SVC_INFO.labels(service.name,service.id,service.short_id,image[0],image[1]).set(1)
+
         services = self.docker.services.list(filters=self.settings['filter_services'])
         for blacklist_service in self.settings['blacklist_services']:
             for service in services:

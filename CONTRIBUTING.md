@@ -7,7 +7,7 @@ Thanks!
 ## TL;DR
 
 * Fork the repository on [GitLab](https://gitlab.com/ix.ai/cioban)!
-* Create a topic branch in your forked repository, based on the master branch
+* Create a topic branch in your forked repository, based on the `main` branch
 * Submit a [Merge Request](https://gitlab.com/ix.ai/cioban/-/merge_requests)
 
 ## GitLab Project

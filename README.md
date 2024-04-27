@@ -1,6 +1,6 @@
 # cioban
 
-[![Pipeline Status](https://gitlab.com/ix.ai/cioban/badges/master/pipeline.svg)](https://gitlab.com/ix.ai/cioban/)
+[![Pipeline Status](https://gitlab.com/ix.ai/cioban/badges/main/pipeline.svg)](https://gitlab.com/ix.ai/cioban/)
 [![Docker Stars](https://img.shields.io/docker/stars/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Docker Image Version (latest)](https://img.shields.io/docker/v/ixdotai/cioban/latest)](https://hub.docker.com/r/ixdotai/cioban/)
@@ -184,16 +184,16 @@ Docker handles all the work of [applying rolling updates](https://docs.docker.co
 Starting with version 0.8.1, the images are multi-arch, with builds for amd64, arm64.
 Please note, `armv7` and `armv6` are no longer available starting with version 0.14.0, since the support for them was dropped in the upstream [docker:latest](https://hub.docker.com/_/docker) image.
 * `vN.N.N` - for example 0.8.0
-* `latest` - always pointing to the latest version
-* `dev-master` - the last build on the master branch
+* `latest` - always pointing to the latest tagged version
+* `dev-main` - the last build on the `main` branch
 
 ## Resources
 
-* GitLab: https://gitlab.com/ix.ai/cioban
-* GitHub: https://github.com/ix-ai/cioban
-* GitLab Registry: `registry.gitlab.com/ix.ai/cioban` - https://gitlab.com/ix.ai/cioban/container_registry
-* GitHub Registry: `ghcr.io/ix-ai/cioban` - https://ghcr.io/ix-ai/cioban
-* Docker Hub: `ixdotai/cioban` - https://hub.docker.com/r/ixdotai/cioban
+* GitLab: <https://gitlab.com/ix.ai/cioban>
+* GitHub: <https://github.com/ix-ai/cioban>
+* GitLab Registry: `registry.gitlab.com/ix.ai/cioban` - <https://gitlab.com/ix.ai/cioban/container_registry>
+* GitHub Registry: `ghcr.io/ix-ai/cioban` - <https://ghcr.io/ix-ai/cioban>
+* Docker Hub: `ixdotai/cioban` - <https://hub.docker.com/r/ixdotai/cioban>
 
 ## Credits
 Cioban is a fork of [shepherd](https://github.com/djmaze/shepherd). It has been completely rewritten in python.

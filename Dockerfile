@@ -32,6 +32,7 @@ COPY --from=builder /work /
 
 RUN set -xeu; \
     ls -lashi /wheels; \
+    apk upgrade --no-cache; \
     apk add --no-cache py3-pip; \
     pip3 install --no-cache-dir --break-system-packages -U pip;\
     pip3 install \

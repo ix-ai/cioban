@@ -43,19 +43,6 @@ class Notify(IxNotifiers):
         }
         notifier.send(**params)
 
-    def telegram_notify(self, notifier, **kwargs):
-        """ parses the arguments, formats the message and dispatches it """
-        log.debug('Sending notification to telegram')
-        message = f"*{kwargs.get('title')}*\n"
-        if kwargs.get('message'):
-            message += kwargs['message']
-        else:
-            for k, v in kwargs.items():
-                if k == 'title':
-                    break
-                message += f"*{notifier.key_to_title(k)}*: `{v}`  \n"
-        notifier.send(message=message)
-
     def null_notify(self, notifier, **kwargs):
         """ dispatches directly """
         notifier.send(f'{kwargs}')

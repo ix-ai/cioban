@@ -13,8 +13,6 @@ log = logging.getLogger('cioban')
 options = helpers.gather_environ()
 options['notifiers'] = []
 
-if options.get('telegram_token') and options.get('telegram_chat_id'):
-    options['notifiers'].append('telegram')
 if options.get('gotify_url') and options.get('gotify_token'):
     options['notifiers'].append('gotify')
 

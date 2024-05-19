@@ -18,8 +18,6 @@ def gather_environ(keys=None) -> dict:
         keys = {
             'filter_services': 'filter',
             'blacklist_services': 'list',
-            'telegram_token': 'string',
-            'telegram_chat_id': 'string',
             'gotify_url': 'string',
             'gotify_token': 'string',
             'gotify_default_priority': 'int',

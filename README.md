@@ -8,7 +8,7 @@
 [![Gitlab Project](https://img.shields.io/badge/GitLab-Project-554488.svg)](https://gitlab.com/ix.ai/cioban/)
 
 
-A docker swarm service for automatically updating your services to the latest image tag push. You can enable telegram or gotify notifications, so you get a message after every successful update.
+A docker swarm service for automatically updating your services to the latest image tag push. You can enable gotify notifications, so you get a message after every successful update.
 
 ## Contributing
 
@@ -28,8 +28,6 @@ Cioban will try to update your services every 5 minutes by default. The followin
 | `SCHEDULE_TIME`             | -           | Cron-Style string for scheduled runs. This will **disable** `SLEEP_TIME` |
 | `BLACKLIST_SERVICES`        | -           | Space-separated list of service names to exclude from updates |
 | `FILTER_SERVICES`           | -           | Anything accepted by the filtering flag in `docker service ls`. Example: `label=ai.ix.auto-update=true` |
-| `TELEGRAM_TOKEN`            | -           | See the [Telegram documentation](https://core.telegram.org/bots#creating-a-new-bot) how to get a new token |
-| `TELEGRAM_CHAT_ID`          | -           | See this question on [stackoverflow](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id) |
 | `GOTIFY_URL`                | -           | The URL of the [Gotify](https://gotify.net/) server |
 | `GOTIFY_TOKEN`              | -           | The APP token for Gotify |
 | `GOTIFY_DEFAULT_PRIORITY`   | -           | If set, this is the priority of the Gotify message. See this comment in [gotify/android#18](https://github.com/gotify/android/issues/18#issuecomment-437403888). Must be integer. |
@@ -85,8 +83,6 @@ docker service create \
     --env BLACKLIST_SERVICES="cioban karma_karma karma_oauth" \
     --env FILTER_SERVICES="label=ai.ix.auto-update=true" \
     --env LOGLEVEL="WARNING" \
-    --env TELEGRAM_TOKEN="000000000:zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" \
-    --env TELEGRAM_CHAT_ID="-0000000000000" \
     --env NOTIFY_INCLUDE_NEW_IMAGE="yes" \
     --env NOTIFY_INCLUDE_OLD_IMAGE="y" \
     --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
@@ -137,8 +133,6 @@ services:
       NOTIFY_INCLUDE_IMAGE: 'yes'
       GOTIFY_URL: "${GOTIFY_URL?err}"
       GOTIFY_TOKEN: "${GOTIFY_TOKEN?err}"
-      TELEGRAM_TOKEN: "${TELEGRAM_TOKEN?err}"
-      TELEGRAM_CHAT_ID: "${TELEGRAM_CHAT_ID?err}"
       LOGLEVEL: INFO
 networks:
   websites: {}

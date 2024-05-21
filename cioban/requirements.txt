@@ -2,7 +2,7 @@ prometheus_client==0.20.0
 docker==7.0.0
 pause==0.3
 pygelf==0.4.2
-ix-notifiers==0.0.259196408
+ix-notifiers==0.0.1298594628
 cronsim==2.5
 python-dateutil==2.9.0
 setuptools

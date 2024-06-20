@@ -223,7 +223,22 @@ class Cioban():
         # this will allow us to set a metric `service_info`
         for service in self.docker.services.list():
             image = service.attrs['Spec']['TaskTemplate']['ContainerSpec']['Image'].split('@sha256:')
-            prometheus.PROM_SVC_INFO.labels(service.name,service.id,service.short_id,image[0],image[1]).set(1)
+            try:
+                prometheus.PROM_SVC_INFO.labels(
+                    name=service.name,
+                    id=service.id,
+                    short_id=service.short_id,
+                    image_name=image[0],
+                    image_sha256=image[1]
+                ).set(1)
+            except IndexError:
+                prometheus.PROM_SVC_INFO.labels(
+                    name=service.name,
+                    id=service.id,
+                    short_id=service.short_id,
+                    image_name=image[0],
+                    image_sha256='N/A'
+                ).set(1)
 
         services = self.docker.services.list(filters=self.settings['filter_services'])
         for blacklist_service in self.settings['blacklist_services']:

@@ -26,7 +26,8 @@ RUN pip3 wheel --prefer-binary -r /work/cioban/requirements.txt -w /work/wheels
 FROM alpine:latest@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
 
 LABEL maintainer="docker@ix.ai" \
-      ai.ix.repository="ix.ai/cioban"
+      ai.ix.repository="ix.ai/cioban" \
+      org.opencontainers.image.source="https://gitlab.com/ix.ai/cioban"
 
 COPY --from=builder /work /
 

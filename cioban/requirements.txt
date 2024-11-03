@@ -3,7 +3,7 @@ docker==7.1.0
 pause==0.3
 pygelf==0.4.2
 ix-notifiers==0.0.1382933711
-cronsim==2.5
+cronsim==2.6
 python-dateutil==2.9.0.post0
 setuptools
 

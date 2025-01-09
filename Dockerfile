@@ -1,4 +1,4 @@
-FROM alpine:latest@sha256:b97e2a89d0b9e4011bb88c02ddf01c544b8c781acf1f4d559e7c8f12f1047ac3 as builder
+FROM alpine:latest@sha256:56fa17d2a7e7f168a043a2712e63aed1f8543aeafdcee47c58dcffe38ed51099 as builder
 
 COPY cioban/requirements.txt /work/cioban/requirements.txt
 
@@ -23,7 +23,7 @@ RUN set -xeu; \
 
 RUN pip3 wheel --prefer-binary -r /work/cioban/requirements.txt -w /work/wheels
 
-FROM alpine:latest@sha256:b97e2a89d0b9e4011bb88c02ddf01c544b8c781acf1f4d559e7c8f12f1047ac3
+FROM alpine:latest@sha256:56fa17d2a7e7f168a043a2712e63aed1f8543aeafdcee47c58dcffe38ed51099
 
 LABEL maintainer="docker@ix.ai" \
       ai.ix.repository="ix.ai/cioban" \

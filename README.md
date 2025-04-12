@@ -1,5 +1,15 @@
 # cioban
 
+## Deprecation Notice
+
+**This project is deprecated and has been archived**. Please switch to [gitlab.com/egos-tech/cioban](https://gitlab.com/egos-tech/cioban).
+
+Replace your docker image with `registry.gitlab.com/egos-tech/cioban:latest`.
+
+All future updates will only be done to that project.
+
+## Description
+
 [![Pipeline Status](https://gitlab.com/ix.ai/cioban/badges/main/pipeline.svg)](https://gitlab.com/ix.ai/cioban/)
 [![Docker Stars](https://img.shields.io/docker/stars/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/ixdotai/cioban.svg)](https://hub.docker.com/r/ixdotai/cioban/)
